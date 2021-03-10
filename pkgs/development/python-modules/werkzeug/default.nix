@@ -20,7 +20,7 @@ buildPythonPackage rec {
   disabledTests = lib.optionals stdenv.isDarwin [
     "test_get_machine_id"
   ];
-  skipTests = true;
+  doCheck = false;
 
   meta = with lib; {
     homepage = "https://palletsprojects.com/p/werkzeug/";
