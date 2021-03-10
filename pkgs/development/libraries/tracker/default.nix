@@ -90,7 +90,7 @@ stdenv.mkDerivation rec {
     "-Ddocs=true"
   ];
 
-  doCheck = true;
+  doCheck = false;
 
   postPatch = ''
     patchShebangs utils/g-ir-merge/g-ir-merge
