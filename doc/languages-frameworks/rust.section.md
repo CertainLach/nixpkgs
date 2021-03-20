@@ -147,7 +147,6 @@ where they are known to differ. But there are ways to customize the argument:
      };
    }
    ```
-
    will result in:
    ```shell
    --target /nix/store/asdfasdfsadf-thumb-crazy.json # contains {"foo":"","bar":""}
@@ -747,7 +746,7 @@ with import "${src.out}/rust-overlay.nix" pkgs pkgs;
 stdenv.mkDerivation {
   name = "rust-env";
   buildInputs = [
-    # Note: to use use stable, just replace `nightly` with `stable`
+    # Note: to use stable, just replace `nightly` with `stable`
     latest.rustChannels.nightly.rust
 
     # Add some extra dependencies from `pkgs`
