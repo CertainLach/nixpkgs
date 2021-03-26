@@ -96,7 +96,7 @@ let
     url = "https://github.com/k3s-io/k3s";
     rev = "v${k3sVersion}";
     leaveDotGit = true; # ./scripts/version.sh depends on git
-    sha256 = "sha256-JgC8nTB8f0WOZnslI7dlGuD7hrWyi0XN7ookhaAdtmY=";
+    sha256 = "0rmn3nh8a94axv6lb2xjnn3gpq0scnvj69bvcs74azvw62fvq016";
   };
   # Stage 1 of the k3s build:
   # Let's talk about how k3s is structured.
