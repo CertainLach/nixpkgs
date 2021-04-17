@@ -340,6 +340,10 @@ self: super: {
     dependencies = [ self.fzfWrapper ];
   });
 
+  onehalf = super.onehalf.overrideAttrs (old: {
+    configurePhase = "cd vim";
+  });
+
   skim-vim = super.skim-vim.overrideAttrs (old: {
     dependencies = [ self.skim ];
   });
@@ -731,7 +735,7 @@ self: super: {
             libiconv
           ];
 
-          cargoSha256 = "u1ryOhwDgRBQ32MBPkWHI6eU6yZqNAZfyKvckr6nvCY=";
+          cargoSha256 = "25UkYKhlGmlDg4fz1jZHjpQn5s4k5FKlFK0MU8YM5SE=";
         };
       in
       ''
@@ -796,6 +800,7 @@ self: super: {
       "coc-diagnostic"
       "coc-emmet"
       "coc-eslint"
+      "coc-explorer"
       "coc-git"
       "coc-go"
       "coc-highlight"

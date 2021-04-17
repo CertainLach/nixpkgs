@@ -10,15 +10,16 @@
 , protobuf3-to-dict
 , smdebug-rulesconfig
 , pandas
+, packaging
 }:
 
 buildPythonPackage rec {
   pname = "sagemaker";
-  version = "2.31.0";
+  version = "2.34.0";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-RMw7l3s0QBzB+exiZg2aBQYeprHUJM+f0Rf+N8ywaBU=";
+    sha256 = "sha256-j0YlFh5SG1PlBN5vWZ9bLuOKcO03pDwoOB44CMyvXPk=";
   };
 
   pythonImportsCheck = [
@@ -32,6 +33,7 @@ buildPythonPackage rec {
     google-pasta
     importlib-metadata
     numpy
+    packaging
     protobuf
     protobuf3-to-dict
     smdebug-rulesconfig
