@@ -249,7 +249,15 @@ let
           + optionalString (ssl && vhost.http2) "http2 "
           + optionalString vhost.default "default_server "
           + optionalString (extraParameters != []) (concatStringsSep " " extraParameters)
-          + ";";
+          + ";"
+          + (if ssl && vhost.http3 then ''
+          # UDP listener for **QUIC+HTTP/3
+          listen ${addr}:${toString port} http3 reuseport;
+          # Advertise that HTTP/3 is available
+          add_header Alt-Svc 'h3=":443"';
+          # Sent when QUIC was used
+          add_header QUIC-Status $quic;
+          '' else "");
 
         redirectListen = filter (x: !x.ssl) defaultListen;
 
@@ -811,28 +819,38 @@ in
         # Logs directory and mode
         LogsDirectory = "nginx";
         LogsDirectoryMode = "0750";
+        # Proc filesystem
+        ProcSubset = "pid";
+        ProtectProc = "invisible";
+        # New file permissions
+        UMask = "0027"; # 0640 / 0750
         # Capabilities
         AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" "CAP_SYS_RESOURCE" ];
         CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" "CAP_SYS_RESOURCE" ];
         # Security
         NoNewPrivileges = true;
-        # Sandboxing
+        # Sandboxing (sorted by occurrence in https://www.freedesktop.org/software/systemd/man/systemd.exec.html)
         ProtectSystem = "strict";
         ProtectHome = mkDefault true;
         PrivateTmp = true;
         PrivateDevices = true;
         ProtectHostname = true;
+        ProtectClock = true;
         ProtectKernelTunables = true;
         ProtectKernelModules = true;
+        ProtectKernelLogs = true;
         ProtectControlGroups = true;
         RestrictAddressFamilies = [ "AF_UNIX" "AF_INET" "AF_INET6" ];
+        RestrictNamespaces = true;
         LockPersonality = true;
         MemoryDenyWriteExecute = !(builtins.any (mod: (mod.allowMemoryWriteExecute or false)) cfg.package.modules);
         RestrictRealtime = true;
         RestrictSUIDSGID = true;
+        RemoveIPC = true;
         PrivateMounts = true;
         # System Call Filtering
         SystemCallArchitectures = "native";
+        SystemCallFilter = "~@chown @cpu-emulation @debug @keyring @ipc @module @mount @obsolete @privileged @raw-io @reboot @setuid @swap";
       };
     };
 
@@ -879,6 +897,7 @@ in
     users.users = optionalAttrs (cfg.user == "nginx") {
       nginx = {
         group = cfg.group;
+        isSystemUser = true;
         uid = config.ids.uids.nginx;
       };
     };

@@ -61,7 +61,7 @@ let
     builder = ./builder.sh;
 
     meta = with lib; {
-      maintainers = with maintainers; [matthewbauer];
+      maintainers = with maintainers; [ matthewbauer qyliss ];
       platforms = platforms.unix;
       license = licenses.bsd2;
     };
@@ -482,13 +482,6 @@ let
       substituteInPlace scanw.c \
         --replace "__strong_alias(vwscanw, vw_scanw)" 'extern int vwscanw(WINDOW*, const char*, va_list) __attribute__ ((alias ("vw_scanw")));'
     '';
-  };
-
-  libkern = mkDerivation {
-    path = "lib/libkern";
-    version = "8.0";
-    sha256 = "1wirqr9bms69n4b5sr32g1b1k41hcamm7c9n7i8c440m73r92yv4";
-    meta.platforms = lib.platforms.netbsd;
   };
 
   column = mkDerivation {
