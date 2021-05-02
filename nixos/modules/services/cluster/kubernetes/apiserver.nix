@@ -279,8 +279,8 @@ in
         A CIDR notation IP range from which to assign service cluster IPs.
         This must not overlap with any IP ranges assigned to nodes for pods.
       '';
-      default = "10.0.0.0/24";
-      type = str;
+      default = top.serviceCidr;
+      type = nullOr str;
     };
 
     tlsCertFile = mkOption {
@@ -387,7 +387,8 @@ in
               --service-account-issuer=${toString cfg.serviceAccountIssuer} \
               --service-account-signing-key-file=${cfg.serviceAccountSigningKeyFile} \
               --service-account-key-file=${cfg.serviceAccountKeyFile} \
-              --service-cluster-ip-range=${cfg.serviceClusterIpRange} \
+              ${optionalString (cfg.serviceClusterIpRange != "")
+                "--service-cluster-ip-range=${cfg.serviceClusterIpRange}"} \
               --storage-backend=${cfg.storageBackend} \
               ${optionalString (cfg.tlsCertFile != null)
                 "--tls-cert-file=${cfg.tlsCertFile}"} \

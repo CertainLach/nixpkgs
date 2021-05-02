@@ -172,7 +172,13 @@ in {
 
     clusterCidr = mkOption {
       description = "Kubernetes controller manager and proxy CIDR Range for Pods in cluster.";
-      default = "10.1.0.0/16";
+      default = "10.42.0.0/16";
+      type = types.nullOr types.str;
+    };
+
+    serviceCidr = mkOption {
+      description = "Kubernetes controller manager and proxy CIDR Range for Services in cluster";
+      default = "10.43.0.0/16";
       type = types.nullOr types.str;
     };
 

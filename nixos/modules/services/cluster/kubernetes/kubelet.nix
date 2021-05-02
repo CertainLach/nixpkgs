@@ -86,6 +86,16 @@ in
     };
 
     cni = {
+      enable = mkOption {
+        description = "Enable cni config";
+        type = bool;
+        default = true;
+      };
+      bridgeCallIptables = mkOption {
+        description = "Enable bridge calls to iptables";
+        type = bool;
+        default = true;
+      };
       packages = mkOption {
         description = "List of network plugin packages to install.";
         type = listOf package;
@@ -246,17 +256,18 @@ in
 
   ###### implementation
   config = mkMerge [
-    (mkIf cfg.enable {
-
+    (mkIf (cfg.enable && cfg.cni.enable) {
       environment.etc."cni/net.d".source = cniConfig;
-
-      services.kubernetes.kubelet.seedDockerImages = [infraContainer];
-
+    })
+    (mkIf (cfg.enable && cfg.cni.bridgeCallIptables) {
       boot.kernel.sysctl = {
         "net.bridge.bridge-nf-call-iptables"  = 1;
         "net.ipv4.ip_forward"                 = 1;
         "net.bridge.bridge-nf-call-ip6tables" = 1;
       };
+    })
+    (mkIf cfg.enable {
+      services.kubernetes.kubelet.seedDockerImages = [infraContainer];
 
       systemd.services.kubelet = {
         description = "Kubernetes Kubelet Service";
