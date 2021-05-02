@@ -1,6 +1,6 @@
 { lib
 , fetchFromGitHub
-, buildGoPackage
+, buildGoModule
 , btrfs-progs
 , go-md2man
 , installShellFiles
@@ -8,37 +8,37 @@
 , nixosTests
 }:
 
-buildGoPackage rec {
+buildGoModule rec {
   pname = "containerd";
-  version = "v1.5.0-rc.1";
+  version = "1.5.0-rc.2";
 
   src = fetchFromGitHub {
     owner = "containerd";
     repo = "containerd";
     rev = "v${version}";
-    sha256 = "0qjbfj1dw3pykxhh8zahcxlgpyjzgnrngk5vjaf34akwyan8nrxb";
+    sha256 = "sha256-zg1/cOnOPCQcYSazEZK1PE861gg3Gq54v0dIY/PPk70=";
   };
 
-  goPackagePath = "github.com/containerd/containerd";
-  outputs = [ "out" "man" ];
+  vendorSha256 = null;
+
+  outputs = [ "out" ];
 
   nativeBuildInputs = [ go-md2man installShellFiles util-linux ];
 
   buildInputs = [ btrfs-progs ];
 
-  buildFlags = [ "VERSION=v${version}" "REVISION=${src.rev}" ];
+  subPackages = [
+    "cmd/containerd-shim-runc-v1"
+    "cmd/containerd-shim-runc-v2"
+    "cmd/containerd-shim"
+    "cmd/containerd"
+    "cmd/ctr"
+  ];
 
   BUILDTAGS = [ ]
     ++ lib.optional (btrfs-progs == null) "no_btrfs";
 
-  buildPhase = ''
-    cd go/src/${goPackagePath}
-    patchShebangs .
-    make binaries man $buildFlags
-  '';
-
-  installPhase = ''
-    install -Dm555 bin/* -t $out/bin
+  postInstall = ''
     installManPage man/*.[1-9]
     installShellCompletion --bash contrib/autocomplete/ctr
     installShellCompletion --zsh --name _ctr contrib/autocomplete/zsh_autocomplete
