@@ -32,17 +32,7 @@ rec {
       patches = [];
     });
 
-    docker-containerd = containerd.overrideAttrs (oldAttrs: {
-      name = "docker-containerd-${version}";
-      inherit version;
-      src = fetchFromGitHub {
-        owner = "containerd";
-        repo = "containerd";
-        rev = containerdRev;
-        sha256 = containerdSha256;
-      };
-      buildInputs = oldAttrs.buildInputs ++ [ libseccomp ];
-    });
+    docker-containerd = containerd;
 
     docker-tini = tini.overrideAttrs  (oldAttrs: {
       name = "docker-init-${version}";
