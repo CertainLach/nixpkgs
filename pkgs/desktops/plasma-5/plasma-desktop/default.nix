@@ -33,6 +33,7 @@ mkDerivation {
   patches = [
     ./hwclock-path.patch
     ./tzdir.patch
+    ./taskmanager-applet.patch
   ];
   postPatch = ''
     sed '1i#include <cmath>' -i kcms/touchpad/backends/x11/synapticstouchpad.cpp

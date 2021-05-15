@@ -1,0 +1,68 @@
+From ac7261bfa8beab6e44e98ae543094925f6cae59d Mon Sep 17 00:00:00 2001
+From: Yaroslav Bolyukin <iam@lach.pw>
+Date: Wed, 12 May 2021 13:18:38 +0300
+Subject: [PATCH] feat: allow taskmanager applet to be collapsed
+
+---
+ applets/taskmanager/package/contents/config/main.xml        | 4 ++++
+ .../taskmanager/package/contents/ui/ConfigAppearance.qml    | 6 ++++++
+ applets/taskmanager/package/contents/ui/main.qml            | 4 ++--
+ 3 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/applets/taskmanager/package/contents/config/main.xml b/applets/taskmanager/package/contents/config/main.xml
+index c0f78cb45..cc8fee4fb 100644
+--- a/applets/taskmanager/package/contents/config/main.xml
++++ b/applets/taskmanager/package/contents/config/main.xml
+@@ -99,6 +99,10 @@
+       <label>Whether to indicate applications that are playing audio including an option to mute them.</label>
+       <default>true</default>
+     </entry>
++    <entry name="fill" type="Bool">
++      <label>Whether task manager should occupy all available space.</label>
++      <default>true</default>
++    </entry>
+     <entry name="taskHoverEffect" type="Bool">
+       <label>Whether task buttons should change in appearance when the mouse pointer is above them.</label>
+       <default>true</default>
+diff --git a/applets/taskmanager/package/contents/ui/ConfigAppearance.qml b/applets/taskmanager/package/contents/ui/ConfigAppearance.qml
+index 387b7107d..362ab8dc7 100644
+--- a/applets/taskmanager/package/contents/ui/ConfigAppearance.qml
++++ b/applets/taskmanager/package/contents/ui/ConfigAppearance.qml
+@@ -35,6 +35,7 @@ Item {
+     property alias cfg_showToolTips: showToolTips.checked
+     property alias cfg_highlightWindows: highlightWindows.checked
+     property bool cfg_indicateAudioStreams
++    property alias cfg_fill: fill.checked
+     property alias cfg_iconSize: iconSize.value
+     property alias cfg_maxStripes: maxStripes.value
+     property alias cfg_forceStripes: forceStripes.checked
+@@ -73,6 +74,11 @@ Item {
+             visible: plasmoidVertical
+         }
+ 
++        CheckBox {
++            id: fill
++            text: i18n("Fill free space")
++        }
++
+         Slider {
+             id: iconSize
+             visible: plasmoidVertical
+diff --git a/applets/taskmanager/package/contents/ui/main.qml b/applets/taskmanager/package/contents/ui/main.qml
+index 2270401c9..272949161 100644
+--- a/applets/taskmanager/package/contents/ui/main.qml
++++ b/applets/taskmanager/package/contents/ui/main.qml
+@@ -55,8 +55,8 @@ MouseArea {
+         }
+     }
+ 
+-    Layout.fillWidth: true
+-    Layout.fillHeight: true
++    Layout.fillWidth: tasks.vertical ? true : plasmoid.configuration.fill
++    Layout.fillHeight: !tasks.vertical ? true : plasmoid.configuration.fill
+     Layout.minimumWidth: tasks.vertical ? 0 : LayoutManager.preferredMinWidth()
+     Layout.minimumHeight: !tasks.vertical ? 0 : LayoutManager.preferredMinHeight()
+ 
+-- 
+2.31.1
+
