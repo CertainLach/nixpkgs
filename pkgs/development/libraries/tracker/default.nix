@@ -1,6 +1,7 @@
 { lib
 , stdenv
 , fetchurl
+, fetchpatch
 , gettext
 , meson
 , ninja
@@ -18,7 +19,7 @@
 , sqlite
 , libxslt
 , libstemmer
-, gnome3
+, gnome
 , icu
 , libuuid
 , libsoup
@@ -28,21 +29,32 @@
 , substituteAll
 }:
 
-stdenv.mkDerivation (rec {
+stdenv.mkDerivation rec {
   pname = "tracker";
-  version = "3.0.3";
+  version = "3.1.1";
 
   outputs = [ "out" "dev" "devdoc" ];
 
   src = fetchurl {
     url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
-    sha256 = "sha256-b1yEqzvh7aUgUBsq7XIhYWoM8VKRDFN3V7U4vAXv/KM=";
+    sha256 = "sha256-Q3bi6YRUBm9E96JC5FuZs7/kwDtn+rGauw7Vhsp0iuc=";
   };
 
   patches = [
     (substituteAll {
       src = ./fix-paths.patch;
       inherit asciidoc;
+    })
+
+    # Add missing build target dependencies to fix parallel building of docs.
+    # TODO: Upstream this.
+    ./fix-docs.patch
+
+    # Fix 32bit datetime issue, use this upstream patch until 3.1.2 lands
+    # https://gitlab.gnome.org/GNOME/tracker/-/merge_requests/401
+    (fetchpatch {
+      url = "https://gitlab.gnome.org/GNOME/tracker/merge_requests/401.patch";
+      sha256 = "QEf+ciGkkCzanmtGO0aig6nAxd+NxjvuNi4RbNOwZEA=";
     })
   ];
 
@@ -75,21 +87,23 @@ stdenv.mkDerivation (rec {
     libstemmer
   ];
 
-  checkInputs = [
-    python3.pkgs.pygobject3
+  checkInputs = with python3.pkgs; [
+    pygobject3
+    tappy
   ];
 
   mesonFlags = [
     "-Ddocs=true"
   ];
 
-  doCheck = false;
+  doCheck = true;
 
   postPatch = ''
     patchShebangs utils/g-ir-merge/g-ir-merge
     patchShebangs utils/data-generators/cc/generate
     patchShebangs tests/functional-tests/test-runner.sh.in
     patchShebangs tests/functional-tests/*.py
+    patchShebangs examples/python/endpoint.py
   '';
 
   preCheck = ''
@@ -120,7 +134,7 @@ stdenv.mkDerivation (rec {
   '';
 
   passthru = {
-    updateScript = gnome3.updateScript {
+    updateScript = gnome.updateScript {
       packageName = pname;
       versionPolicy = "none";
     };
@@ -134,8 +148,3 @@ stdenv.mkDerivation (rec {
     platforms = platforms.linux;
   };
 }
-// {
-  # TMP: fatal error: libtracker-sparql/tracker-sparql-enum-types.h: No such file or directory
-  enableParallelBuilding = false;
-}
-)

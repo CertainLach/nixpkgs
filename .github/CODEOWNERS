@@ -46,6 +46,7 @@
 /nixos/default.nix          @nbp @infinisil
 /nixos/lib/from-env.nix     @nbp @infinisil
 /nixos/lib/eval-config.nix  @nbp @infinisil
+/nixos/doc @ryantm
 /nixos/doc/manual/configuration/abstractions.xml      @nbp
 /nixos/doc/manual/configuration/config-file.xml       @nbp
 /nixos/doc/manual/configuration/config-syntax.xml     @nbp
@@ -79,11 +80,13 @@
 /pkgs/development/tools/poetry2nix @adisbladis
 
 # Haskell
-/pkgs/development/compilers/ghc                       @cdepillabout @sternenseemann
-/pkgs/development/haskell-modules		      @cdepillabout @sternenseemann
-/pkgs/development/haskell-modules/default.nix	      @cdepillabout @sternenseemann
-/pkgs/development/haskell-modules/generic-builder.nix @cdepillabout @sternenseemann
-/pkgs/development/haskell-modules/hoogle.nix	      @cdepillabout @sternenseemann
+/doc/languages-frameworks/haskell.section.md  @cdepillabout @sternenseemann @maralorn
+/maintainers/scripts/haskell                  @cdepillabout @sternenseemann @maralorn
+/pkgs/development/compilers/ghc               @cdepillabout @sternenseemann @maralorn
+/pkgs/development/haskell-modules             @cdepillabout @sternenseemann @maralorn
+/pkgs/test/haskell                            @cdepillabout @sternenseemann @maralorn
+/pkgs/top-level/release-haskell.nix           @cdepillabout @sternenseemann @maralorn
+/pkgs/top-level/haskell-packages.nix          @cdepillabout @sternenseemann @maralorn
 
 # Perl
 /pkgs/development/interpreters/perl @volth @stigtsp
@@ -177,8 +180,7 @@
 /pkgs/top-level/emacs-packages.nix     @adisbladis
 
 # Neovim
-/pkgs/applications/editors/neovim      @jonringer
-/pkgs/applications/editors/neovim      @teto
+/pkgs/applications/editors/neovim      @jonringer @teto
 
 # VimPlugins
 /pkgs/misc/vim-plugins         @jonringer @softinio
