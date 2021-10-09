@@ -18448,6 +18448,10 @@ with pkgs;
 
   opencl-clang = callPackage ../development/libraries/opencl-clang { };
 
+  maliit-framework = callPackage ../development/libraries/maliit-framework { };
+
+  maliit-keyboard = callPackage ../applications/accessibility/maliit-keyboard { };
+
   mapnik = callPackage ../development/libraries/mapnik { };
 
   marisa = callPackage ../development/libraries/marisa {};

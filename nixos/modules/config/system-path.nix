@@ -151,6 +151,7 @@ in
         "/share/kservices5"
         "/share/kservicetypes5"
         "/share/kxmlgui5"
+        "/share/maliit"
         "/share/systemd"
         "/share/thumbnailers"
       ];
