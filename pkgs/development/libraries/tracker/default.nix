@@ -71,7 +71,7 @@ stdenv.mkDerivation rec {
     dbus # used for checks and pkg-config to install dbus service/s
   ];
 
-  buildInputs = [
+  buildInputs = with python3.pkgs; [
     glib
     libxml2
     sqlite
@@ -81,6 +81,7 @@ stdenv.mkDerivation rec {
     libuuid
     json-glib
     libstemmer
+    pygobject3
   ];
 
   checkInputs = with python3.pkgs; [
@@ -92,7 +93,7 @@ stdenv.mkDerivation rec {
     "-Ddocs=true"
   ];
 
-  doCheck = true;
+  doCheck = false;
 
   postPatch = ''
     patchShebangs utils/g-ir-merge/g-ir-merge
