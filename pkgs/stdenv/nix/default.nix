@@ -36,7 +36,7 @@ bootStages ++ [
 
       shell = prevStage.bash + "/bin/sh";
 
-      fetchurlBoot = prevStage.stdenv.fetchurlBoot;
+    fetchurlBoot = prevStage.stdenv.fetchurlBoot;
 
       overrides = self: super: {
         inherit cc;

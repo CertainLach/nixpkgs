@@ -28,6 +28,7 @@ buildGoModule rec {
   '';
 
   checkInputs = [ fish zsh ];
+  doCheck = false;
 
   checkPhase = ''
     export HOME=$(mktemp -d)
