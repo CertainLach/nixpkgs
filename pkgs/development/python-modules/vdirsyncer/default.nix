@@ -1,6 +1,7 @@
-{ stdenv
+{ lib
 , buildPythonPackage
 , fetchPypi
+, fetchpatch
 , isPy27
 , click
 , click-log
@@ -45,6 +46,14 @@ buildPythonPackage rec {
     pytest-subtesthack
   ];
 
+  patches = [
+    (fetchpatch {
+      name = "update-usage-deprecated-method.patch";
+      url = "https://github.com/pimutils/vdirsyncer/commit/7577fa21177442aacc2d86640ef28cebf1c4aaef.patch";
+      sha256 = "0inkr1wfal20kssij8l5myhpjivxg8wlvhppqc3lvml9d1i75qbh";
+    })
+  ];
+
   postPatch = ''
     substituteInPlace setup.py --replace "click>=5.0,<6.0" "click"
   '';
@@ -53,9 +62,12 @@ buildPythonPackage rec {
     export DETERMINISTIC_TESTS=true
   '';
 
-  disabledTests = [ "test_verbosity" ];
+  disabledTests = [
+    "test_verbosity"
+    "test_create_collections" # Flaky test exceeds deadline on hydra: https://github.com/pimutils/vdirsyncer/issues/837
+  ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = "https://github.com/pimutils/vdirsyncer";
     description = "Synchronize calendars and contacts";
     license = licenses.mit;

@@ -1,11 +1,14 @@
-{ stdenv, buildPackages, fetchurl, perl, buildLinux, ... } @ args:
+{ buildPackages, fetchurl, perl, buildLinux, nixosTests, stdenv, ... } @ args:
 
 buildLinux (args // rec {
-  version = "4.9.243";
+  version = "4.9.287";
   extraMeta.branch = "4.9";
+  extraMeta.broken = stdenv.isAarch64;
 
   src = fetchurl {
     url = "mirror://kernel/linux/kernel/v4.x/linux-${version}.tar.xz";
-    sha256 = "111rlzx6z4kf8zwxncib96d9wy6qmkbs0cq3dhnybipwlyf1iank";
+    sha256 = "1hlpxnlz0y5vxcmkavsirk2kfb2l34fcvmhlcb99slh28xkjhhfl";
   };
+
+  kernelTests = args.kernelTests or [ nixosTests.kernel-generic.linux_4_9 ];
 } // (args.argsOverride or {}))

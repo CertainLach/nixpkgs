@@ -1,11 +1,18 @@
-{ lib, poetry2nix, python, fetchFromGitHub }:
+{ lib
+, poetry2nix
+, python
+, fetchFromGitHub
+, projectDir ? ./.
+, pyproject ? projectDir + "/pyproject.toml"
+, poetrylock ? projectDir + "/poetry.lock"
+}:
 
 
 poetry2nix.mkPoetryApplication {
 
   inherit python;
 
-  projectDir = ./.;
+  inherit projectDir pyproject poetrylock;
 
   # Don't include poetry in inputs
   __isBootstrap = true;
@@ -15,8 +22,8 @@ poetry2nix.mkPoetryApplication {
   # "Vendor" dependencies (for build-system support)
   postPatch = ''
     echo "import sys" >> poetry/__init__.py
-    for path in ''${PYTHONPATH//:/ }; do echo $path; done | uniq | while read path; do
-      echo "sys.path.insert(0, \"$path\")" >> poetry/__init__.py
+    for path in $propagatedBuildInputs; do
+        echo "sys.path.insert(0, \"$path\")" >> poetry/__init__.py
     done
   '';
 

@@ -30,7 +30,11 @@ with lib;
           else [ pkgs.grub2 pkgs.syslinux ]);
 
     fileSystems."/" =
-      { fsType = "tmpfs";
+      # This module is often over-layed onto an existing host config
+      # that defines `/`. We use mkOverride 60 to override standard
+      # values, but at the same time leave room for mkForce values
+      # targeted at the image build.
+      { fsType = mkOverride 60 "tmpfs";
         options = [ "mode=0755" ];
       };
 
@@ -88,7 +92,7 @@ with lib;
 
     system.build.netbootIpxeScript = pkgs.writeTextDir "netboot.ipxe" ''
       #!ipxe
-      kernel ${pkgs.stdenv.hostPlatform.platform.kernelTarget} init=${config.system.build.toplevel}/init initrd=initrd ${toString config.boot.kernelParams}
+      kernel ${pkgs.stdenv.hostPlatform.linux-kernel.target} init=${config.system.build.toplevel}/init initrd=initrd ${toString config.boot.kernelParams}
       initrd initrd
       boot
     '';

@@ -158,7 +158,7 @@ rec {
     seq deepSeq genericClosure;
 
 
-  ## nixpks version strings
+  ## nixpkgs version strings
 
   /* Returns the current full nixpkgs version number. */
   version = release + versionSuffix;
@@ -297,12 +297,15 @@ rec {
   # Usage:
   # {
   #   foo = lib.warn "foo is deprecated" oldFoo;
+  #   bar = lib.warnIf (bar == "") "Empty bar is deprecated" bar;
   # }
   #
   # TODO: figure out a clever way to integrate location information from
   # something like __unsafeGetAttrPos.
 
   warn = msg: builtins.trace "[1;31mwarning: ${msg}[0m";
+  warnIf = cond: msg: if cond then warn msg else id;
+
   info = msg: builtins.trace "INFO: ${msg}";
 
   showWarnings = warnings: res: lib.fold (w: x: warn w x) res warnings;
@@ -331,7 +334,10 @@ rec {
      has the same return type and semantics as builtins.functionArgs.
      setFunctionArgs : (a → b) → Map String Bool.
   */
-  functionArgs = f: f.__functionArgs or (builtins.functionArgs f);
+  functionArgs = f:
+    if f ? __functor
+    then f.__functionArgs or (lib.functionArgs (f.__functor f))
+    else builtins.functionArgs f;
 
   /* Check whether something is a function or something
      annotated with function args.

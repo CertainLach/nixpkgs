@@ -1,7 +1,6 @@
-{ stdenv
+{ lib, stdenv
 , fetchurl
-, python
-, pkgconfig
+, pkg-config
 , bison
 , flex
 , perl
@@ -12,6 +11,7 @@
 , docbook_xml_dtd_45
 , readline
 , popt
+, dbus
 , libbsd
 , libarchive
 , zlib
@@ -25,6 +25,7 @@
 , tdb
 , cmocka
 , rpcsvc-proto
+, python3Packages
 , nixosTests
 
 , enableLDAP ? false, openldap
@@ -39,15 +40,15 @@
 , enablePam ? (!stdenv.isDarwin), pam
 }:
 
-with stdenv.lib;
+with lib;
 
 stdenv.mkDerivation rec {
   pname = "samba";
-  version = "4.12.6";
+  version = "4.14.4";
 
   src = fetchurl {
     url = "mirror://samba/pub/samba/stable/${pname}-${version}.tar.gz";
-    sha256 = "1v3cmw40csmi3jd8mhlx4bm7bk4m0426zkyin7kq11skwnsrna02";
+    sha256 = "1fc9ix91hb1f35j69sk7rsi9pky2p0vsmw47s973bx801cm0kbw9";
   };
 
   outputs = [ "out" "dev" "man" ];
@@ -60,7 +61,8 @@ stdenv.mkDerivation rec {
   ];
 
   nativeBuildInputs = [
-    pkgconfig
+    python3Packages.python
+    pkg-config
     bison
     flex
     perl
@@ -76,9 +78,11 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    python
+    python3Packages.python
+    python3Packages.wrapPython
     readline
     popt
+    dbus
     jansson
     libbsd
     libarchive
@@ -89,10 +93,10 @@ stdenv.mkDerivation rec {
     libtasn1
     tdb
   ] ++ optionals stdenv.isLinux [ liburing systemd ]
-    ++ optional enableLDAP openldap
+    ++ optionals enableLDAP [ openldap.dev python3Packages.markdown ]
     ++ optional (enablePrinting && stdenv.isLinux) cups
     ++ optional enableMDNS avahi
-    ++ optionals enableDomainController [ gpgme lmdb ]
+    ++ optionals enableDomainController [ gpgme lmdb python3Packages.dnspython ]
     ++ optional enableRegedit ncurses
     ++ optional (enableCephFS && stdenv.isLinux) libceph
     ++ optionals (enableGlusterFS && stdenv.isLinux) [ glusterfs libuuid ]
@@ -125,6 +129,8 @@ stdenv.mkDerivation rec {
     ++ optional (!enableAcl) "--without-acl-support"
     ++ optional (!enablePam) "--without-pam";
 
+  pythonPath = [ python3Packages.dnspython tdb ];
+
   preBuild = ''
     export MAKEFLAGS="-j $NIX_BUILD_CORES"
   '';
@@ -143,17 +149,22 @@ stdenv.mkDerivation rec {
     patchelf --shrink-rpath "\$BIN";
     EOF
     find $out -type f -name \*.so -exec $SHELL -c "$SCRIPT" \;
+
+    # Fix PYTHONPATH for some tools
+    wrapPythonPrograms
   '';
 
   passthru = {
     tests.samba = nixosTests.samba;
   };
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = "https://www.samba.org";
     description = "The standard Windows interoperability suite of programs for Linux and Unix";
     license = licenses.gpl3;
     platforms = platforms.unix;
+    # N.B. enableGlusterFS does not build
+    broken = stdenv.isDarwin || enableGlusterFS;
     maintainers = with maintainers; [ aneeshusa ];
   };
 }

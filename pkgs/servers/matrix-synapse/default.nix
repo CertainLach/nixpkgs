@@ -1,34 +1,50 @@
 { lib, stdenv, python3, openssl
 , enableSystemd ? stdenv.isLinux, nixosTests
 , enableRedis ? false
+, callPackage
 }:
 
-with python3.pkgs;
-
 let
-  plugins = python3.pkgs.callPackage ./plugins { };
+  py = python3.override {
+    packageOverrides = self: super:  {
+      twisted = super.twisted.overridePythonAttrs (oldAttrs: rec {
+        version = "21.7.0";
+        src = oldAttrs.src.override {
+          inherit version;
+          extension = "tar.gz";
+          sha256 = "01lh225d7lfnmfx4f4kxwl3963gjc9yg8jfkn1w769v34ia55mic";
+        };
+
+        propagatedBuildInputs = with self; oldAttrs.propagatedBuildInputs ++ [ typing-extensions ];
+      });
+    };
+  };
+  plugins = py.pkgs.callPackage ./plugins { };
+  tools = callPackage ./tools { };
 in
-buildPythonApplication rec {
+with py.pkgs; buildPythonApplication rec {
   pname = "matrix-synapse";
-  version = "1.22.1";
+  version = "1.45.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1pbxdqpfa7wzdz61p6x58x7841vng1g65qayxgcw73bn1shl50jb";
+    sha256 = "sha256-8ZcZdQbNxrRy91gxKSoasu8QmdV27T7HeWIRz0bStzY=";
   };
 
   patches = [
-    # adds an entry point for the service
-    ./homeserver-script.patch
+    ./0001-setup-add-homeserver-as-console-script.patch
   ];
 
+  buildInputs = [ openssl ];
+
   propagatedBuildInputs = [
-    setuptools
+    authlib
     bcrypt
     bleach
     canonicaljson
     daemonize
     frozendict
+    ijson
     jinja2
     jsonschema
     lxml
@@ -40,20 +56,20 @@ buildPythonApplication rec {
     psutil
     psycopg2
     pyasn1
+    pyjwt
     pymacaroons
     pynacl
     pyopenssl
     pysaml2
     pyyaml
     requests
+    setuptools
     signedjson
     sortedcontainers
     treq
     twisted
-    unpaddedbase64
     typing-extensions
-    authlib
-    pyjwt
+    unpaddedbase64
   ] ++ lib.optional enableSystemd systemd
     ++ lib.optional enableRedis hiredis;
 
@@ -62,15 +78,15 @@ buildPythonApplication rec {
   doCheck = !stdenv.isDarwin;
 
   checkPhase = ''
-    ${lib.optionalString (!enableRedis) "rm -r tests/replication # these tests need the optional dependency 'hiredis'"}
-    PYTHONPATH=".:$PYTHONPATH" ${python3.interpreter} -m twisted.trial tests
+    PYTHONPATH=".:$PYTHONPATH" ${python3.interpreter} -m twisted.trial -j $NIX_BUILD_CORES tests
   '';
 
   passthru.tests = { inherit (nixosTests) matrix-synapse; };
   passthru.plugins = plugins;
+  passthru.tools = tools;
   passthru.python = python3;
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = "https://matrix.org";
     description = "Matrix reference homeserver";
     license = licenses.asl20;

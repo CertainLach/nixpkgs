@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, jdk14, makeWrapper, autoPatchelfHook, makeDesktopItem, glib, libsecret }:
+{ lib, stdenv, fetchurl, jdk, makeWrapper, autoPatchelfHook, makeDesktopItem, glib, libsecret }:
 
 let
   desktopItem = makeDesktopItem {
@@ -10,8 +10,8 @@ let
     genericName = "Apache Directory Studio";
     categories = "Java;Network";
   };
-  version = "2.0.0-M15";
-  versionWithDate = "2.0.0.v20200411-M15";
+  version = "2.0.0-M17";
+  versionWithDate = "2.0.0.v20210717-M17";
 in
 stdenv.mkDerivation rec {
   pname = "apache-directory-studio";
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
     if stdenv.hostPlatform.system == "x86_64-linux" then
       fetchurl {
         url = "mirror://apache/directory/studio/${versionWithDate}/ApacheDirectoryStudio-${versionWithDate}-linux.gtk.x86_64.tar.gz";
-        sha256 = "1rkyb0qcsl9hk2qcwp5mwaab69q3sn77v5xyn9mbvi5wg9icbc37";
+        sha256 = "19zdspzv4n3mfgb1g45s3wh0vbvn6a9zjd4xi5x2afmdjkzlwxi4";
       }
     else throw "Unsupported system: ${stdenv.hostPlatform.system}";
 
@@ -39,12 +39,12 @@ stdenv.mkDerivation rec {
 
     makeWrapper "$dest/ApacheDirectoryStudio" \
         "$out/bin/ApacheDirectoryStudio" \
-        --prefix PATH : "${jdk14}/bin"
+        --prefix PATH : "${jdk}/bin"
     install -D icon.xpm "$out/share/pixmaps/apache-directory-studio.xpm"
     install -D -t "$out/share/applications" ${desktopItem}/share/applications/*
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Eclipse-based LDAP browser and directory client";
     homepage = "https://directory.apache.org/studio/";
     license = licenses.asl20;

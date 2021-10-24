@@ -1,25 +1,38 @@
-{ stdenv, fetchurl, makeWrapper, pkgconfig, utillinux, which
-, procps, libcap_ng, openssl, python3 , perl
+{ lib, stdenv, fetchurl, fetchpatch, makeWrapper, pkg-config, util-linux, which
+, procps, libcap_ng, openssl, python3, perl, autoconf, automake, libtool
 , kernel ? null }:
 
-with stdenv.lib;
+with lib;
 
 let
   _kernel = kernel;
   pythonEnv = python3.withPackages (ps: with ps; [ six ]);
 in stdenv.mkDerivation rec {
-  version = "2.14.0";
+  version = "2.14.2";
   pname = "openvswitch";
 
   src = fetchurl {
     url = "https://www.openvswitch.org/releases/${pname}-${version}.tar.gz";
-    sha256 = "0q52k6mq1jfsv0ix55mjd5ljlalhklhqfrma3l61dzhgihmfawa1";
+    sha256 = "sha256-ZfQg+VTiUNiV+y2yKhMuHLVgvF4rkFHoNFETSBCOWXo=";
   };
+
+  patches = [
+    (fetchpatch {
+      name = "CVE-2021-36980.patch";
+      url = "https://github.com/openvswitch/ovs/commit/8ce8dc34b5f73b30ce0c1869af9947013c3c6575.patch";
+      sha256 = "1iyaqkiwijl2djjvnnvykh95qlzgvn9hmpszrwzmhwvik5m7b6g6";
+      # we don't run the tests, and the binary example missing from the patch
+      # file upsets the build process
+      excludes = [ "tests/*" ];
+    })
+  ];
+
+  preConfigure = "./boot.sh";
 
   kernel = optional (_kernel != null) _kernel.dev;
 
-  nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ makeWrapper utillinux openssl libcap_ng pythonEnv
+  nativeBuildInputs = [ pkg-config makeWrapper autoconf automake libtool ];
+  buildInputs = [ util-linux openssl libcap_ng pythonEnv
                   perl procps which ];
 
   configureFlags = [
@@ -44,7 +57,7 @@ in stdenv.mkDerivation rec {
   enableParallelBuilding = true;
   doCheck = false; # bash-completion test fails with "compgen: command not found"
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     platforms = platforms.linux;
     description = "A multilayer virtual switch";
     longDescription =

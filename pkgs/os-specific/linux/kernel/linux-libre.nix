@@ -1,8 +1,8 @@
 { stdenv, lib, fetchsvn, linux
 , scripts ? fetchsvn {
     url = "https://www.fsfla.org/svn/fsfla/software/linux-libre/releases/branches/";
-    rev = "17762";
-    sha256 = "1fj77j9x20w8xwk2xmga625dv81c145gj01z8yxz8i3x2cxwccrs";
+    rev = "18380";
+    sha256 = "0sg7mnxqzc5zdnl8l7gfy1kc52w7c85fdhywvdbjgs7inx2bb1qd";
   }
 , ...
 }:
@@ -16,7 +16,7 @@ let
 
 in linux.override {
   argsOverride = {
-    modDirVersion = "${linux.modDirVersion}-gnu";
+    modDirVersion = "${linux.modDirVersion}-gnu1";
     isLibre = true;
 
     src = stdenv.mkDerivation {

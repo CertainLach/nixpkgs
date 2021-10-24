@@ -66,8 +66,9 @@ let
       stringLength sub substring tail trace;
     inherit (self.trivial) id const pipe concat or and bitAnd bitOr bitXor
       bitNot boolToString mergeAttrs flip mapNullable inNixShell isFloat min max
-      importJSON importTOML warn info showWarnings nixpkgsVersion version mod compare
-      splitByAndCompare functionArgs setFunctionArgs isFunction toHexString toBaseDigits;
+      importJSON importTOML warn warnIf info showWarnings nixpkgsVersion version
+      mod compare splitByAndCompare functionArgs setFunctionArgs isFunction
+      toHexString toBaseDigits;
     inherit (self.fixedPoints) fix fix' converge extends composeExtensions
       composeManyExtensions makeExtensible makeExtensibleWithCustomName;
     inherit (self.attrsets) attrByPath hasAttrByPath setAttrByPath
@@ -78,7 +79,7 @@ let
       zipAttrsWithNames zipAttrsWith zipAttrs recursiveUpdateUntil
       recursiveUpdate matchAttrs overrideExisting getOutput getBin
       getLib getDev getMan chooseDevOutputs zipWithNames zip
-      recurseIntoAttrs dontRecurseIntoAttrs;
+      recurseIntoAttrs dontRecurseIntoAttrs cartesianProductOfSets;
     inherit (self.lists) singleton forEach foldr fold foldl foldl' imap0 imap1
       concatMap flatten remove findSingle findFirst any all count
       optional optionals toList range partition zipListsWith zipLists
@@ -101,7 +102,7 @@ let
       noDepEntry fullDepEntry packEntry stringAfter;
     inherit (self.customisation) overrideDerivation makeOverridable
       callPackageWith callPackagesWith extendDerivation hydraJob
-      makeScope;
+      makeScope makeScopeWithSplicing;
     inherit (self.meta) addMetaAttrs dontDistribute setName updateName
       appendToName mapDerivationAttrset setPrio lowPrio lowPrioSet hiPrio
       hiPrioSet;
@@ -122,15 +123,15 @@ let
     inherit (self.options) isOption mkEnableOption mkSinkUndeclaredOptions
       mergeDefaultOption mergeOneOption mergeEqualOption getValues
       getFiles optionAttrSetToDocList optionAttrSetToDocList'
-      scrubOptionValue literalExample showOption showFiles
-      unknownModule mkOption;
+      scrubOptionValue literalExpression literalExample literalDocBook
+      showOption showFiles unknownModule mkOption;
     inherit (self.types) isType setType defaultTypeMerge defaultFunctor
       isOptionType mkOptionType;
     inherit (self.asserts)
       assertMsg assertOneOf;
     inherit (self.debug) addErrorContextToAttrs traceIf traceVal traceValFn
       traceXMLVal traceXMLValMarked traceSeq traceSeqN traceValSeq
-      traceValSeqFn traceValSeqN traceValSeqNFn traceShowVal
+      traceValSeqFn traceValSeqN traceValSeqNFn traceFnSeqN traceShowVal
       traceShowValMarked showVal traceCall traceCall2 traceCall3
       traceValIfNot runTests testAllTrue traceCallXml attrNamesToStr;
     inherit (self.misc) maybeEnv defaultMergeArg defaultMerge foldArgs

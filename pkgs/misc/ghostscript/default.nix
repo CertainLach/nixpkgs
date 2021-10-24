@@ -1,6 +1,6 @@
 { config, stdenv, lib, fetchurl, pkg-config, zlib, expat, openssl, autoconf
 , libjpeg, libpng, libtiff, freetype, fontconfig, libpaper, jbig2dec
-, libiconv, ijs, lcms2, fetchpatch
+, libiconv, ijs, lcms2, fetchpatch, callPackage
 , cupsSupport ? config.ghostscript.cups or (!stdenv.isDarwin), cups ? null
 , x11Support ? cupsSupport, xlibsWrapper ? null # with CUPS, X11 only adds very little
 }:
@@ -97,15 +97,29 @@ stdenv.mkDerivation rec {
     cp -r Resource "$out/share/ghostscript/${version}"
 
     ln -s "${fonts}" "$out/share/ghostscript/fonts"
-  '' + stdenv.lib.optionalString stdenv.isDarwin ''
+  '' + lib.optionalString stdenv.isDarwin ''
     for file in $out/lib/*.dylib* ; do
       install_name_tool -id "$file" $file
     done
   '';
 
+  # dynamic library name only contains maj.min, eg. '9.53'
+  dylib_version = lib.versions.majorMinor version;
   preFixup = lib.optionalString stdenv.isDarwin ''
-    install_name_tool -change libgs.dylib.${version} $out/lib/libgs.dylib.${version} $out/bin/gs
+    install_name_tool -change libgs.dylib.$dylib_version $out/lib/libgs.dylib.$dylib_version $out/bin/gs
   '';
+
+  # validate dynamic linkage
+  doInstallCheck = true;
+  installCheckPhase = ''
+    runHook preInstallCheck
+
+    $out/bin/gs --version
+
+    runHook postInstallCheck
+  '';
+
+  passthru.tests.test-corpus-render = callPackage ./test-corpus-render.nix {};
 
   meta = {
     homepage = "https://www.ghostscript.com/";
@@ -120,9 +134,9 @@ stdenv.mkDerivation rec {
       of output drivers for various file formats and printers.
     '';
 
-    license = stdenv.lib.licenses.agpl3;
+    license = lib.licenses.agpl3;
 
-    platforms = stdenv.lib.platforms.all;
-    maintainers = [ stdenv.lib.maintainers.viric ];
+    platforms = lib.platforms.all;
+    maintainers = [ lib.maintainers.viric ];
   };
 }

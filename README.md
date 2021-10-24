@@ -60,7 +60,7 @@ channels](https://nixos.org/nix/manual/#sec-channels).
 Nixpkgs is among the most active projects on GitHub. While thousands
 of open issues and pull requests might seem a lot at first, it helps
 consider it in the context of the scope of the project. Nixpkgs
-describes how to build over 40,000 pieces of software and implements a
+describes how to build tens of thousands of pieces of software and implements a
 Linux distribution. The [GitHub Insights](https://github.com/NixOS/nixpkgs/pulse)
 page gives a sense of the project activity.
 
@@ -87,7 +87,7 @@ Most contributions are based on and merged into these branches:
   deemed of sufficiently high quality
 
 For more information about contributing to the project, please visit
-the [contributing page](https://github.com/NixOS/nixpkgs/blob/master/.github/CONTRIBUTING.md).
+the [contributing page](https://github.com/NixOS/nixpkgs/blob/master/CONTRIBUTING.md).
 
 # Donations
 

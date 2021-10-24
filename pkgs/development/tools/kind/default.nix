@@ -1,19 +1,19 @@
-{ stdenv, buildGoModule, fetchFromGitHub, installShellFiles }:
+{ lib, buildGoModule, fetchFromGitHub, installShellFiles }:
 
-with stdenv.lib;
+with lib;
 
 buildGoModule rec {
   pname = "kind";
-  version = "0.9.0";
+  version = "0.11.0";
 
   src = fetchFromGitHub {
     rev    = "v${version}";
     owner  = "kubernetes-sigs";
     repo   = "kind";
-    sha256 = "1kyjmlp1kmr3lwylnya6w392j1qpqgbvcacwpnz3ifyh3pbv32qr";
+    sha256 = "020s1fr92lv9yiy5kbnrfb8n0lpslriwyh5z31aym3x44qpc6jaj";
   };
 
-  vendorSha256 = "04fmqh6lhvvzpvf1l2xk1r8687k5jx2lb5199rgmjbfnjgsa0q2d";
+  vendorSha256 = "08cjvhk587f3aar4drn0hq9q1zlsnl4p7by4j38jzb4r8ix5s98y";
 
   doCheck = false;
 
@@ -31,7 +31,7 @@ buildGoModule rec {
     description = "Kubernetes IN Docker - local clusters for testing Kubernetes";
     homepage    = "https://github.com/kubernetes-sigs/kind";
     maintainers = with maintainers; [ offline rawkode ];
-    license     = stdenv.lib.licenses.asl20;
+    license     = lib.licenses.asl20;
     platforms   = platforms.unix;
   };
 }

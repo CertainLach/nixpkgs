@@ -1,22 +1,22 @@
-{ stdenv, meson, ninja, fetchFromGitHub, glib, pkgconfig, gtk-doc, docbook_xsl, gobject-introspection }:
+{ lib, stdenv, meson, ninja, fetchFromGitHub, glib, pkg-config, gtk-doc, docbook_xsl, gobject-introspection }:
 
 stdenv.mkDerivation rec {
   pname = "playerctl";
-  version = "2.2.1";
+  version = "2.4.1";
 
   src = fetchFromGitHub {
     owner = "acrisci";
     repo = "playerctl";
     rev = "v${version}";
-    sha256 = "17hi33sw3663qz5v54bqqil31sgkrlxkb2l5bgqk87pac6x2wnbz";
+    sha256 = "sha256-OiGKUnsKX0ihDRceZoNkcZcEAnz17h2j2QUOSVcxQEY=";
   };
 
-  nativeBuildInputs = [ meson ninja pkgconfig gtk-doc docbook_xsl gobject-introspection ];
+  nativeBuildInputs = [ meson ninja pkg-config gtk-doc docbook_xsl gobject-introspection ];
   buildInputs = [ glib ];
 
   mesonFlags = [ "-Dbash-completions=true" ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Command-line utility and library for controlling media players that implement MPRIS";
     homepage = "https://github.com/acrisci/playerctl";
     license = licenses.lgpl3;

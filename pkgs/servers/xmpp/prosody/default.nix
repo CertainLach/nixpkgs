@@ -11,11 +11,11 @@
 assert withLibevent -> luaevent != null;
 assert withDBI -> luadbi != null;
 
-with stdenv.lib;
+with lib;
 
 
 stdenv.mkDerivation rec {
-  version = "0.11.7"; # also update communityModules
+  version = "0.11.10"; # also update communityModules
   pname = "prosody";
   # The following community modules are necessary for the nixos module
   # prosody module to comply with XEP-0423 and provide a working
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
   ];
   src = fetchurl {
     url = "https://prosody.im/downloads/source/${pname}-${version}.tar.gz";
-    sha256 = "0iw73ids6lv09pg2fn0cxsm2pvi593md71xk48zbcp28advc1zr8";
+    sha256 = "1q84s9cq7cgzd295qxa2iy0r3vd3v3chbck62bdx3pd6skk19my6";
   };
 
   # A note to all those merging automated updates: Please also update this
@@ -37,8 +37,8 @@ stdenv.mkDerivation rec {
   # version.
   communityModules = fetchhg {
     url = "https://hg.prosody.im/prosody-modules";
-    rev = "7678b4880719";
-    sha256 = "1rpk3jcfhsa9hl7d7y638kprs9in0ljjp1nqxg30w1689v5h85d2";
+    rev = "64fafbeba14d";
+    sha256 = "02gj1b8sdmdvymsdmjpq47zrl7sg578jcdxbbq18s44f3njmc9q1";
   };
 
   buildInputs = [

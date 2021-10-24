@@ -1,4 +1,4 @@
-{ go, cacert, git, lib, removeReferencesTo, stdenv, vend }:
+{ go, cacert, git, lib, stdenv, vend }:
 
 { name ? "${args'.pname}-${args'.version}"
 , src
@@ -27,27 +27,25 @@
 # We want parallel builds by default
 , enableParallelBuilding ? true
 
-# Disabled flag
-, disabled ? false
-
 # Do not enable this without good reason
 # IE: programs coupled with the compiler
 , allowGoReference ? false
 
 , meta ? {}
 
+# Not needed with buildGoModule
+, goPackagePath ? ""
+
 , ... }@args':
 
 with builtins;
 
+assert goPackagePath != "" -> throw "`goPackagePath` is not needed with `buildGoModule`";
+
 let
-  args = removeAttrs args' [ "overrideModAttrs" "vendorSha256" "disabled" ];
+  args = removeAttrs args' [ "overrideModAttrs" "vendorSha256" ];
 
-  removeReferences = [ ] ++ lib.optional (!allowGoReference) go;
-
-  removeExpr = refs: ''remove-references-to ${lib.concatMapStrings (ref: " -t ${ref}") refs}'';
-
-  go-modules = if vendorSha256 != null then go.stdenv.mkDerivation (let modArgs = {
+  go-modules = if vendorSha256 != null then stdenv.mkDerivation (let modArgs = {
 
     name = "${name}-go-modules";
 
@@ -120,13 +118,13 @@ let
       }
   ) // overrideModAttrs modArgs) else "";
 
-  package = go.stdenv.mkDerivation (args // {
-    nativeBuildInputs = [ removeReferencesTo go ] ++ nativeBuildInputs;
+  package = stdenv.mkDerivation (args // {
+    nativeBuildInputs = [ go ] ++ nativeBuildInputs;
 
     inherit (go) GOOS GOARCH;
 
     GO111MODULE = "on";
-    GOFLAGS = "-mod=vendor";
+    GOFLAGS = [ "-mod=vendor" ] ++ lib.optionals (!allowGoReference) [ "-trimpath" ];
 
     configurePhase = args.configurePhase or ''
       runHook preConfigure
@@ -229,10 +227,6 @@ let
       runHook postInstall
     '';
 
-    preFixup = (args.preFixup or "") + ''
-      find $out/{bin,libexec,lib} -type f 2>/dev/null | xargs -r ${removeExpr removeReferences} || true
-    '';
-
     strictDeps = true;
 
     disallowedReferences = lib.optional (!allowGoReference) go;
@@ -248,7 +242,5 @@ let
                     [ lib.maintainers.kalbasit ];
     };
   });
-in if disabled then
-  throw "${package.name} not supported for go ${go.meta.branch}"
-else
+in
   package

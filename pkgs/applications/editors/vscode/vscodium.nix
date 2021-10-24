@@ -1,23 +1,29 @@
-{ stdenv, callPackage, fetchurl }:
+{ lib, stdenv, callPackage, fetchurl, nixosTests }:
 
 let
   inherit (stdenv.hostPlatform) system;
 
   plat = {
     x86_64-linux = "linux-x64";
-    x86_64-darwin = "darwin";
+    x86_64-darwin = "darwin-x64";
+    aarch64-linux = "linux-arm64";
+    armv7l-linux = "linux-armhf";
   }.${system};
 
   archive_fmt = if system == "x86_64-darwin" then "zip" else "tar.gz";
 
   sha256 = {
-    x86_64-linux = "0hn4pqmabz3qf3bbqnn1fz7fcgzdkp2lwr2yzgmx8hhh3cff8bnb";
-    x86_64-darwin = "1x3wx0d99ihyya0n89qclc3jlhh0m72hs8hj7l0h3z6zmh6q2vzv";
+    x86_64-linux = "1q260kjhyx8djl82275ii63z1mzypsz7rkz3pj1n2wjkwsnw276x";
+    x86_64-darwin = "1scx155rm8j6dwn0i31b6ajsdxcn1n24p3k6dx248w0zyiwd5wm1";
+    aarch64-linux = "1j788a0p767i65ying9pfg6rss8l7g76n2323dnmj12bhxs6cqd1";
+    armv7l-linux = "1yfwmfxpilfv2h3pp698pg4wr6dnyzwg0r266xiwsw7z38jh54fk";
   }.${system};
 
   sourceRoot = {
     x86_64-linux = ".";
     x86_64-darwin = "";
+    aarch64-linux = ".";
+    armv7l-linux = ".";
   }.${system};
 in
   callPackage ./generic.nix rec {
@@ -27,7 +33,7 @@ in
 
     # Please backport all compatible updates to the stable release.
     # This is important for the extension ecosystem.
-    version = "1.51.1";
+    version = "1.61.2";
     pname = "vscodium";
 
     executableName = "codium";
@@ -39,7 +45,9 @@ in
       inherit sha256;
     };
 
-    meta = with stdenv.lib; {
+    tests = nixosTests.vscodium;
+
+    meta = with lib; {
       description = ''
         Open source source code editor developed by Microsoft for Windows,
         Linux and macOS (VS Code without MS branding/telemetry/licensing)
@@ -55,6 +63,6 @@ in
       downloadPage = "https://github.com/VSCodium/vscodium/releases";
       license = licenses.mit;
       maintainers = with maintainers; [ synthetica turion ];
-      platforms = [ "x86_64-linux" "x86_64-darwin" ];
+      platforms = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "armv7l-linux" ];
     };
   }

@@ -1,9 +1,11 @@
-import ../make-test-python.nix ({ pkgs, ...}: let
+args@{ pkgs, nextcloudVersion ? 22, ... }:
+
+(import ../make-test-python.nix ({ pkgs, ...}: let
   adminpass = "hunter2";
   adminuser = "root";
 in {
   name = "nextcloud-with-mysql-and-memcached";
-  meta = with pkgs.stdenv.lib.maintainers; {
+  meta = with pkgs.lib.maintainers; {
     maintainers = [ eqyiel ];
   };
 
@@ -18,6 +20,7 @@ in {
         enable = true;
         hostName = "nextcloud";
         https = true;
+        package = pkgs.${"nextcloud" + (toString nextcloudVersion)};
         caching = {
           apcu = true;
           redis = false;
@@ -96,4 +99,4 @@ in {
         "${withRcloneEnv} ${diffSharedFile}"
     )
   '';
-})
+})) args

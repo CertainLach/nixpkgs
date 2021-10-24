@@ -1,8 +1,9 @@
 { bison
+, cacert
 , fetchFromGitHub
 , flex
 , php
-, stdenv
+, lib, stdenv
 }:
 
 # Make a custom wrapper. If `wrapProgram` is used, arcanist thinks .arc-wrapped is being
@@ -31,7 +32,7 @@ stdenv.mkDerivation {
   };
   buildInputs = [ bison flex php ];
 
-  postPatch = stdenv.lib.optionalString stdenv.isAarch64 ''
+  postPatch = lib.optionalString stdenv.isAarch64 ''
     substituteInPlace support/xhpast/Makefile \
       --replace "-minline-all-stringops" ""
   '';
@@ -46,6 +47,7 @@ stdenv.mkDerivation {
     make install -C support/xhpast
     make cleanall -C support/xhpast
     cp -R . $out/libexec/arcanist
+    ln -sf ${cacert}/etc/ssl/certs/ca-bundle.crt $out/libexec/arcanist/resources/ssl/default.pem
 
     ${makeArcWrapper "arc"}
     ${makeArcWrapper "phage"}
@@ -60,8 +62,8 @@ stdenv.mkDerivation {
   meta = {
     description = "Command line interface to Phabricator";
     homepage = "http://phabricator.org";
-    license = stdenv.lib.licenses.asl20;
-    platforms = stdenv.lib.platforms.unix;
-    maintainers = [ stdenv.lib.maintainers.thoughtpolice ];
+    license = lib.licenses.asl20;
+    platforms = lib.platforms.unix;
+    maintainers = [ lib.maintainers.thoughtpolice ];
   };
 }

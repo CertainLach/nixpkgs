@@ -54,6 +54,10 @@ let
    };
 
    installCrate = import ./install-crate.nix { inherit stdenv; };
+
+   # Allow access to the rust attribute set from inside buildRustCrate, which
+   # has a parameter that shadows the name.
+   rustAttrs = rust;
 in
 
 /* The overridable pkgs.buildRustCrate function.
@@ -153,6 +157,11 @@ in
    # Example: [ "-Z debuginfo=2" ]
    # Default: []
    , extraRustcOpts
+   # A list of extra options to pass to rustc when building a build.rs.
+   #
+   # Example: [ "-Z debuginfo=2" ]
+   # Default: []
+   , extraRustcOptsForBuildRs
    # Whether to enable building tests.
    # Use true to enable.
    # Default: false
@@ -194,6 +203,7 @@ let crate = crate_ // (lib.attrByPath [ crate_.crateName ] (attr: {}) crateOverr
     nativeBuildInputs_ = nativeBuildInputs;
     buildInputs_ = buildInputs;
     extraRustcOpts_ = extraRustcOpts;
+    extraRustcOptsForBuildRs_ = extraRustcOptsForBuildRs;
     buildTests_ = buildTests;
 
     # crate2nix has a hack for the old bash based build script that did split
@@ -250,7 +260,7 @@ stdenv.mkDerivation (rec {
       depsMetadata = lib.foldl' (str: dep: str + dep.metadata) "" (dependencies ++ buildDependencies);
       hashedMetadata = builtins.hashString "sha256"
         (crateName + "-" + crateVersion + "___" + toString (mkRustcFeatureArgs crateFeatures) +
-          "___" + depsMetadata);
+          "___" + depsMetadata + "___" + rustAttrs.toRustTarget stdenv.hostPlatform);
       in lib.substring 0 10 hashedMetadata;
 
     build = crate.build or "";
@@ -272,12 +282,16 @@ stdenv.mkDerivation (rec {
       lib.optionals (crate ? extraRustcOpts) crate.extraRustcOpts
       ++ extraRustcOpts_
       ++ (lib.optional (edition != null) "--edition ${edition}");
+    extraRustcOptsForBuildRs =
+      lib.optionals (crate ? extraRustcOptsForBuildRs) crate.extraRustcOptsForBuildRs
+      ++ extraRustcOptsForBuildRs_
+      ++ (lib.optional (edition != null) "--edition ${edition}");
 
 
     configurePhase = configureCrate {
       inherit crateName buildDependencies completeDeps completeBuildDeps crateDescription
               crateFeatures crateRenames libName build workspace_member release libPath crateVersion
-              extraLinkFlags extraRustcOpts
+              extraLinkFlags extraRustcOptsForBuildRs
               crateAuthors crateHomepage verbose colors;
     };
     buildPhase = buildCrate {
@@ -298,8 +312,9 @@ stdenv.mkDerivation (rec {
   rust = rustc;
   release = crate_.release or true;
   verbose = crate_.verbose or true;
-  extraRustcOpts = [];
   features = [];
+  extraRustcOpts = [];
+  extraRustcOptsForBuildRs = [];
   nativeBuildInputs = [];
   buildInputs = [];
   crateOverrides = defaultCrateOverrides;

@@ -71,7 +71,7 @@ in
       #utmp = 29; # unused
       # ddclient = 30; # converted to DynamicUser = true
       davfs2 = 31;
-      #disnix = 33; # unused
+      disnix = 33;
       osgi = 34;
       tor = 35;
       cups = 36;
@@ -135,7 +135,7 @@ in
       #keys = 96; # unused
       #haproxy = 97; # dynamically allocated as of 2020-03-11
       mongodb = 98;
-      openldap = 99;
+      #openldap = 99; # dynamically allocated as of PR#94610
       #users = 100; # unused
       cgminer = 101;
       munin = 102;
@@ -143,7 +143,7 @@ in
       nix-ssh = 104;
       dictd = 105;
       couchdb = 106;
-      searx = 107;
+      #searx = 107; # dynamically allocated as of 2020-10-27
       kippo = 108;
       jenkins = 109;
       systemd-journal-gateway = 110;
@@ -315,7 +315,7 @@ in
       restya-board = 284;
       mighttpd2 = 285;
       hass = 286;
-      monero = 287;
+      #monero = 287; # dynamically allocated as of 2021-05-08
       ceph = 288;
       duplicati = 289;
       monetdb = 290;
@@ -451,13 +451,13 @@ in
       keys = 96;
       #haproxy = 97; # dynamically allocated as of 2020-03-11
       #mongodb = 98; # unused
-      openldap = 99;
+      #openldap = 99; # dynamically allocated as of PR#94610
       munin = 102;
       #logcheck = 103; # unused
       #nix-ssh = 104; # unused
       dictd = 105;
       couchdb = 106;
-      searx = 107;
+      #searx = 107; # dynamically allocated as of 2020-10-27
       kippo = 108;
       jenkins = 109;
       systemd-journal-gateway = 110;
@@ -617,7 +617,7 @@ in
       restya-board = 284;
       mighttpd2 = 285;
       hass = 286;
-      monero = 287;
+      # monero = 287; # dynamically allocated as of 2021-05-08
       ceph = 288;
       duplicati = 289;
       monetdb = 290;
