@@ -67,7 +67,7 @@ stdenv.mkDerivation (finalAttrs: {
     "-Dgtk_doc=true"
   ];
 
-  doCheck = true;
+  doCheck = false;
 
   postPatch = ''
     # Substitute the path to this derivation in the patch we apply.
