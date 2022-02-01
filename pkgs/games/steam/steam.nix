@@ -4,7 +4,8 @@ let
   traceLog = "/tmp/steam-trace-dependencies.log";
   version = "1.0.0.74";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   pname = "steam-original";
   inherit version;
 
@@ -37,6 +38,7 @@ in stdenv.mkDerivation {
     # this just installs a link, "steam.desktop -> /lib/steam/steam.desktop"
     rm $out/share/applications/steam.desktop
     sed -e 's,/usr/bin/steam,steam,g' steam.desktop > $out/share/applications/steam.desktop
+    chmod a+x $out/share/applications/steam.desktop
   '';
 
   meta = with lib; {
