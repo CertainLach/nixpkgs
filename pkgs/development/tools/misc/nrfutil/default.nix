@@ -2,6 +2,7 @@
 , stdenv
 , fetchFromGitHub
 , python3
+, protobuf3_20
 }:
 
 with python3.pkgs;
@@ -25,7 +26,10 @@ buildPythonApplication rec {
     intelhex
     pc-ble-driver-py
     piccata
-    protobuf
+    # ERROR: Could not find a version that satisfies the requirement protobuf<4.0.0,>=3.17.3 (from nrfutil) (from versions: none)
+    (protobuf.override {
+      protobuf = protobuf3_20;
+    })
     pyserial
     pyspinel
     pyyaml
