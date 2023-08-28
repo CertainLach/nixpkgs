@@ -163,6 +163,9 @@ stdenv.mkDerivation (rec {
   passthru.vscodeExtPublisher = "llvm";
   passthru.vscodeExtUniqueId = "llvm-org.lldb-vscode-0.1.0";
 
+  # TODO: Hack to make dynamic linking work again. Find a better way to do this using the build-system machinery
+  postFixup = if (stdenv.isLinux && lib.versionAtLeast release_version "16") then "patchelf --add-rpath ${libclang.lib}/lib $out/bin/.lldb-wrapped" else null;
+
   meta = llvm_meta // {
     homepage = "https://lldb.llvm.org/";
     description = "A next-generation high-performance debugger";
@@ -198,6 +201,7 @@ stdenv.mkDerivation (rec {
 
   postPatch = null;
   postInstall = null;
+  postFixup = null;
 
   outputs = [ "out" ];
 
