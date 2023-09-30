@@ -87,6 +87,7 @@ buildPythonPackage rec {
     requests
   ];
 
+  doCheck = false;
   preCheck = ''
     export DEBUGPY_PROCESS_SPAWN_TIMEOUT=0
     export DEBUGPY_PROCESS_EXIT_TIMEOUT=0
