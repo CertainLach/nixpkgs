@@ -102,6 +102,7 @@ let
       kaddressbook = callPackage ./kaddressbook.nix {};
       kalarm = callPackage ./kalarm.nix {};
       kalgebra = callPackage ./kalgebra.nix {};
+      kamera = callPackage ./kamera.nix {};
       merkuro = callPackage ./merkuro.nix {};
       kalzium = callPackage ./kalzium.nix {};
       kamoso = callPackage ./kamoso.nix {};
