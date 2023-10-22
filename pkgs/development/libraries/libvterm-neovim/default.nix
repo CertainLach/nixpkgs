@@ -3,6 +3,7 @@
 , fetchurl
 , perl
 , libtool
+, fetchFromGitHub
 }:
 
 stdenv.mkDerivation rec {
@@ -10,9 +11,11 @@ stdenv.mkDerivation rec {
   # Releases are not tagged, look at commit history to find latest release
   version = "0.3.3";
 
-  src = fetchurl {
-    url = "https://launchpad.net/libvterm/trunk/v${lib.versions.majorMinor version}/+download/libvterm-${version}.tar.gz";
-    hash = "sha256-CRVvQ90hKL00fL7r5Q2aVx0yxk4M8Y0hEZeUav9yJuA=";
+  src = fetchFromGitHub {
+    owner = "neovim";
+    repo = "libvterm";
+    rev = "9d6d2112335080312ef8c36667fa717ded4f7daf";
+    sha256 = "sha256-aQJFrDZGLMT0B8Gzj9Jpyyk9eWnuPO2VyuP8/0f/+Yw=";
   };
 
   nativeBuildInputs = [ perl libtool ];
