@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchurl, mono, libmediainfo, sqlite, curl, makeWrapper, nixosTests }:
+{ lib, stdenv, fetchurl, dotnet-runtime, libmediainfo, sqlite, curl, makeWrapper, nixosTests, openssl, icu, zlib }:
 
 stdenv.mkDerivation rec {
   pname = "sonarr";
-  version = "3.0.10.1567";
+  version = "4.0.0.710";
 
   src = fetchurl {
-    url = "https://download.sonarr.tv/v3/main/${version}/Sonarr.main.${version}.linux.tar.gz";
-    hash = "sha256-6zdp/Bg+9pcrElW5neB+BC16Vn1VhTjhMRRIxGrKhxc=";
+    url = "https://download.sonarr.tv/v4/develop/${version}/Sonarr.develop.${version}.linux-x64.tar.gz";
+    hash = "sha256-6Br196zVjBkRRbDt179G1lUFilR0/PxTK3xNKY1sTrM=";
   };
 
   nativeBuildInputs = [ makeWrapper ];
@@ -14,12 +14,13 @@ stdenv.mkDerivation rec {
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/bin
-    cp -r * $out/bin/
-    makeWrapper "${mono}/bin/mono" $out/bin/NzbDrone \
-      --add-flags "$out/bin/Sonarr.exe" \
+    mkdir -p $out/{bin,share/${pname}-${version}}
+    cp -r * $out/share/${pname}-${version}/.
+
+    makeWrapper "${dotnet-runtime}/bin/dotnet" $out/bin/NzbDrone \
+      --add-flags "$out/share/${pname}-${version}/Sonarr.dll" \
       --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [
-          curl sqlite libmediainfo ]}
+        curl sqlite libmediainfo openssl icu zlib ]}
 
     runHook postInstall
   '';
