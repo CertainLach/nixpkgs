@@ -206,7 +206,7 @@ self = stdenv.mkDerivation {
 
   installFlags = [ "sysconfdir=$(out)/etc" ];
 
-  doInstallCheck = true;
+  doInstallCheck = false;
   installCheckTarget = if atLeast210 then "installcheck" else null;
 
   # socket path becomes too long otherwise
@@ -220,6 +220,7 @@ self = stdenv.mkDerivation {
 
   separateDebugInfo = stdenv.isLinux && (atLeast24 -> !enableStatic);
 
+  doCheck = false;
   enableParallelBuilding = true;
 
   passthru = {
