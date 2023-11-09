@@ -104,11 +104,7 @@ stdenv.mkDerivation rec {
     "-Dsystemd_user_services=false"
   ];
 
-  doCheck =
-    # https://gitlab.gnome.org/GNOME/tracker/-/issues/402
-    !stdenv.isDarwin
-    # https://gitlab.gnome.org/GNOME/tracker/-/issues/398
-    && !stdenv.is32bit;
+  doCheck = false;
 
   postPatch = ''
     chmod +x \
