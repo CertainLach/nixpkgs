@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl
+{ lib, stdenv, fetchgit
 , autoreconfHook, pkg-config, pruneLibtoolFiles, flex, bison
 , libmnl, libnetfilter_conntrack, libnfnetlink, libnftnl, libpcap
 , nftablesCompat ? true
@@ -6,12 +6,13 @@
 }:
 
 stdenv.mkDerivation rec {
-  version = "1.8.10";
+  version = "1.8.11";
   pname = "iptables";
 
-  src = fetchurl {
-    url = "https://www.netfilter.org/projects/${pname}/files/${pname}-${version}.tar.xz";
-    sha256 = "XMJVwYk1bjF9BwdVzpNx62Oht4PDRJj7jDAmTzzFnJw=";
+  src = fetchgit {
+    url = "https://git.netfilter.org/iptables";
+    rev = "075e4de85b96ad905c2113d580290963a7872e67";
+    hash = "sha256-o7iEBiTAFm2VECq5Zt1hI+rJQ39MtVSlrZ93lItSKRw=";
   };
 
   outputs = [ "out" "dev" "man" ];
