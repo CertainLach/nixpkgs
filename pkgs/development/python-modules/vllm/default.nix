@@ -43,9 +43,10 @@ buildPythonPackage {
     hash = "sha256-JN+Z1rPJkCLanegJm85Ggw4/2Mq4VkCVtV+UeeDoKuQ=";
   };
 
-  postPatch = ''
+  # Adding ROCM's LLVM to PATH breaks everything.
+  postPatch = lib.optionalString rocmSupport ''
     substituteInPlace setup.py \
-      --replace "/opt/rocm/llvm/bin/amdgpu-offload-arch" "amdgpu-offload-arch"
+      --replace "/opt/rocm/llvm/bin/amdgpu-offload-arch" "${rocmPackages.llvm.llvm}/amdgpu-offload-arch"
   '';
 
   preBuild = lib.optionalString cudaSupport ''
@@ -72,8 +73,6 @@ buildPythonPackage {
     libcusolver # cusolverDn.h
   ]) ++ lib.optionals rocmSupport (with rocmPackages; [
     clr
-    llvm.llvm
-    llvm.bintools
   ]);
 
   propagatedBuildInputs = [
