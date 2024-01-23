@@ -83,7 +83,8 @@ buildPythonPackage {
     libcusolver # cusolverDn.h
   ])) ++ (lib.optionals rocmSupport (with rocmPackages; [
     clr
-    rocm-hip-sdk
+    rocthrust
+    rocprim
   ]));
 
   propagatedBuildInputs = [
