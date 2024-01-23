@@ -52,7 +52,7 @@ buildPythonPackage {
     substituteInPlace setup.py \
       --replace "/opt/rocm/llvm/bin/amdgpu-offload-arch" "${writeShellScript "gpu-arch-hardcode" "echo gfx1100"}"
     substituteInPlace setup.py \
-      --replace "hipcc" "${rocmPackages.hipcc}/bin/hipcc"
+      --replace "'hipcc'" "${rocmPackages.hipcc}/bin/hipcc"
   '';
 
   preBuild = lib.optionalString cudaSupport ''
