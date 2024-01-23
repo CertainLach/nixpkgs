@@ -43,6 +43,11 @@ buildPythonPackage {
     hash = "sha256-JN+Z1rPJkCLanegJm85Ggw4/2Mq4VkCVtV+UeeDoKuQ=";
   };
 
+  postPatch = ''
+    substituteInPlace setup.py \
+      --replace "/opt/rocm/llvm/bin/amdgpu-offload-arch" "amdgpu-offload-arch"
+  '';
+
   preBuild = lib.optionalString cudaSupport ''
     export CUDA_HOME=${cudaPackages.cuda_nvcc}
   ''
@@ -66,7 +71,8 @@ buildPythonPackage {
     libcublas.dev # cublas_v2.h
     libcusolver # cusolverDn.h
   ]) ++ lib.optionals rocmSupport (with rocmPackages; [
-      rocmPackages.clr
+    clr
+    llvm
   ]);
 
   propagatedBuildInputs = [
