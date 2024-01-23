@@ -72,7 +72,7 @@ buildPythonPackage {
     libcusolver # cusolverDn.h
   ]) ++ lib.optionals rocmSupport (with rocmPackages; [
     clr
-    llvm
+    llvm.llvm
   ]);
 
   propagatedBuildInputs = [
