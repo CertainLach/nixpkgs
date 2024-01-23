@@ -46,7 +46,8 @@ buildPythonPackage {
   };
 
   # Adding ROCM's LLVM to PATH breaks everything.
-  # amdgpu-offload-arch returns rocm arch
+  # amdgpu-offload-arch returns rocm arch. vllm still won't work on arch mismatch, but offload-arch script wants
+  # too many new sandbox paths.
   postPatch = lib.optionalString rocmSupport ''
     substituteInPlace setup.py \
       --replace "/opt/rocm/llvm/bin/amdgpu-offload-arch" "${writeShellScript "gpu-arch-hardcode" "echo gfx1100"}"
@@ -68,16 +69,16 @@ buildPythonPackage {
     which
   ];
 
-  buildInputs = lib.optionals cudaSupport (with cudaPackages; [
+  buildInputs = (lib.optionals cudaSupport (with cudaPackages; [
     cuda_cudart.dev # cuda_runtime.h
     cuda_cccl.dev # <thrust/*>
     libcusparse.dev # cusparse.h
     libcublas.dev # cublas_v2.h
     libcusolver # cusolverDn.h
-  ]) ++ lib.optionals rocmSupport (with rocmPackages; [
+  ])) ++ (lib.optionals rocmSupport (with rocmPackages; [
     clr
     hipcc
-  ]);
+  ]));
 
   propagatedBuildInputs = [
     psutil
