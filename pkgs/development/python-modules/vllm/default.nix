@@ -67,7 +67,9 @@ buildPythonPackage {
     torch
     wheel
     which
-  ];
+  ] ++ lib.optionals rocmSupport (with rocmPackages; [
+    hipcc
+  ]);
 
   buildInputs = (lib.optionals cudaSupport (with cudaPackages; [
     cuda_cudart.dev # cuda_runtime.h
@@ -77,7 +79,6 @@ buildPythonPackage {
     libcusolver # cusolverDn.h
   ])) ++ (lib.optionals rocmSupport (with rocmPackages; [
     clr
-    hipcc
   ]));
 
   propagatedBuildInputs = [
