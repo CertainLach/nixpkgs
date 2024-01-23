@@ -86,6 +86,7 @@ buildPythonPackage {
     rocthrust
     rocprim
     hipsparse
+    hipblas
   ]));
 
   propagatedBuildInputs = [
