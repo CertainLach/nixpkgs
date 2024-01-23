@@ -27272,12 +27272,12 @@ with pkgs;
   samba = samba4;
 
   samba4Full = lowPrio (samba4.override {
-    enableLDAP = true;
-    enablePrinting = true;
-    enableMDNS = true;
-    enableDomainController = true;
-    enableRegedit = true;
-    enableCephFS = !stdenv.hostPlatform.isAarch64;
+    # enableLDAP = true;
+    # enablePrinting = true;
+    # enableMDNS = true;
+    # enableDomainController = true;
+    # enableRegedit = true;
+    # enableCephFS = !stdenv.hostPlatform.isAarch64;
   });
 
   sambaFull = samba4Full;
