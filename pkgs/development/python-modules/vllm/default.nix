@@ -51,6 +51,8 @@ buildPythonPackage {
   postPatch = lib.optionalString rocmSupport ''
     substituteInPlace setup.py \
       --replace "/opt/rocm/llvm/bin/amdgpu-offload-arch" "${writeShellScript "gpu-arch-hardcode" "echo gfx1100"}"
+    substituteInPlace setup.py \
+      --replace "hipcc" "${rocmPackages.hipcc}/bin/hipcc"
   '';
 
   preBuild = lib.optionalString cudaSupport ''
@@ -58,6 +60,7 @@ buildPythonPackage {
   ''
   + lib.optionalString rocmSupport ''
     export ROCM_HOME=${rocmPackages.clr}
+    export PATH=$PATH:${rocmPackages.hipcc}
   '';
 
   nativeBuildInputs = [
@@ -67,9 +70,9 @@ buildPythonPackage {
     torch
     wheel
     which
-  ] ++ lib.optionals rocmSupport (with rocmPackages; [
-    hipcc
-  ]);
+  ] ++ lib.optionals rocmSupport [
+    rocmPackages.hipcc
+  ];
 
   buildInputs = (lib.optionals cudaSupport (with cudaPackages; [
     cuda_cudart.dev # cuda_runtime.h
