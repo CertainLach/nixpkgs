@@ -48,11 +48,12 @@ buildPythonPackage {
   # Adding ROCM's LLVM to PATH breaks everything.
   # amdgpu-offload-arch returns rocm arch. vllm still won't work on arch mismatch, but offload-arch script wants
   # too many new sandbox paths.
+  # HIP version format is broken with raw hipcc call, as it wants some packages in /opt/rocm.
   postPatch = lib.optionalString rocmSupport ''
     substituteInPlace setup.py \
       --replace "/opt/rocm/llvm/bin/amdgpu-offload-arch" "${writeShellScript "gpu-arch-hardcode" "echo gfx1100"}"
     substituteInPlace setup.py \
-      --replace "'hipcc'" "${rocmPackages.hipcc}/bin/hipcc"
+      --replace "'hipcc', '--version'" "${writeShellScript "hipcc-version-stub" "echo HIP version: 0.0"}"
   '';
 
   preBuild = lib.optionalString cudaSupport ''
