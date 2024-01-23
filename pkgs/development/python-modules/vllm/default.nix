@@ -46,7 +46,7 @@ buildPythonPackage {
   # Adding ROCM's LLVM to PATH breaks everything.
   postPatch = lib.optionalString rocmSupport ''
     substituteInPlace setup.py \
-      --replace "/opt/rocm/llvm/bin/amdgpu-offload-arch" "${rocmPackages.llvm.llvm}/amdgpu-offload-arch"
+      --replace "/opt/rocm/llvm/bin/amdgpu-offload-arch" "${rocmPackages.llvm.llvm}/bin/amdgpu-offload-arch"
   '';
 
   preBuild = lib.optionalString cudaSupport ''
