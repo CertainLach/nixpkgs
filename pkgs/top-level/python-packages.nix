@@ -15898,6 +15898,11 @@ self: super: with self; {
 
   vllm = callPackage ../development/python-modules/vllm { };
 
+  vllmWithRocm = self.vllm.override {
+    rocmSupport = true;
+    torch = self.torchWithRocm;
+  };
+
   vmprof = callPackage ../development/python-modules/vmprof { };
 
   vncdo = callPackage ../development/python-modules/vncdo { };

@@ -1,7 +1,6 @@
 { lib
 , buildPythonPackage
 , fetchFromGitHub
-, cudaPackages
 , which
 , ninja
 , packaging
@@ -22,7 +21,12 @@
 , pydantic
 , aioprometheus
 , config
+
 , cudaSupport ? config.cudaSupport
+, cudaPackages ? {}
+
+, rocmSupport ? config.rocmSupport
+, rocmPackages ? {}
 }:
 let
   version = "0.2.6";
@@ -41,6 +45,9 @@ buildPythonPackage {
 
   preBuild = lib.optionalString cudaSupport ''
     export CUDA_HOME=${cudaPackages.cuda_nvcc}
+  ''
+  + lib.optionalString rocmSupport ''
+    export ROCM_HOME=${rocmPackages.clr}
   '';
 
   nativeBuildInputs = [
@@ -58,6 +65,8 @@ buildPythonPackage {
     libcusparse.dev # cusparse.h
     libcublas.dev # cublas_v2.h
     libcusolver # cusolverDn.h
+  ]) ++ lib.optionals rocmSupport (with rocmPackages; [
+      rocmPackages.clr
   ]);
 
   propagatedBuildInputs = [
@@ -85,6 +94,6 @@ buildPythonPackage {
     homepage = "https://github.com/vllm-project/vllm";
     license = licenses.asl20;
     maintainers = with maintainers; [ happysalada ];
-    broken = !cudaSupport;
+    broken = !cudaSupport && !rocmSupport;
   };
 }
