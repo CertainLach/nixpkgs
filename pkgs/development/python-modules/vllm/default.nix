@@ -20,6 +20,8 @@
 , uvicorn
 , pydantic
 , aioprometheus
+, writeShellScript
+
 , config
 
 , cudaSupport ? config.cudaSupport
@@ -44,9 +46,10 @@ buildPythonPackage {
   };
 
   # Adding ROCM's LLVM to PATH breaks everything.
+  # amdgpu-offload-arch returns rocm arch
   postPatch = lib.optionalString rocmSupport ''
     substituteInPlace setup.py \
-      --replace "/opt/rocm/llvm/bin/amdgpu-offload-arch" "${rocmPackages.llvm.llvm}/bin/amdgpu-offload-arch"
+      --replace "/opt/rocm/llvm/bin/amdgpu-offload-arch" "${writeShellScript "gpu-arch-hardcode" "echo gfx1100"}"
   '';
 
   preBuild = lib.optionalString cudaSupport ''
