@@ -73,6 +73,7 @@ buildPythonPackage {
   ]) ++ lib.optionals rocmSupport (with rocmPackages; [
     clr
     llvm.llvm
+    llvm.bintools
   ]);
 
   propagatedBuildInputs = [
