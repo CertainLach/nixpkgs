@@ -16,7 +16,7 @@
 , libbsd
 , libarchive
 , zlib
-, liburing
+# , liburing
 , gnutls
 , systemd
 , samba
@@ -116,7 +116,7 @@ stdenv.mkDerivation rec {
     libtasn1
     tdb
     libxcrypt
-  ] ++ optionals stdenv.isLinux [ liburing systemd ]
+  ] ++ optionals stdenv.isLinux [ systemd ]
     ++ optionals stdenv.isDarwin [ libiconv ]
     ++ optionals enableLDAP [ openldap.dev python3Packages.markdown ]
     ++ optionals (!enableLDAP && stdenv.isLinux) [ ldb talloc tevent ]
