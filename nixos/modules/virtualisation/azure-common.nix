@@ -2,7 +2,7 @@
 
 with lib;
 {
-  # imports = [ ../profiles/headless.nix ];
+  imports = [ ../profiles/headless.nix ];
 
   require = [ ./azure-agent.nix ];
   virtualisation.azure.agent.enable = true;
