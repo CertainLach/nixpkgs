@@ -41,8 +41,8 @@ buildPythonPackage {
   src = fetchFromGitHub {
     owner = "vllm-project";
     repo = "vllm";
-    rev = "v${version}";
-    hash = "sha256-JN+Z1rPJkCLanegJm85Ggw4/2Mq4VkCVtV+UeeDoKuQ=";
+    rev = "2832e7b9f92e2d1dd7dfe37951e5837c61d3db20";
+    sha256 = "sha256-br9NUm+E7fa70GvhkkBCstdnqU3VUWyDnPHrmYjASFk=";
   };
 
   # Adding ROCM's LLVM to PATH breaks everything.
