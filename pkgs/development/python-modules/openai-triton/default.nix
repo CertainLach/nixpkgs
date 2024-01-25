@@ -17,7 +17,7 @@
 , lit
 , llvm
 , filelock
-, torchWithRocm
+, torch
 , python
 , cudaPackages
 , cudaSupport ? config.cudaSupport
@@ -150,7 +150,7 @@ buildPythonPackage rec {
   # ];
 
   # Ultimately, torch is our test suite:
-  passthru.tests = { inherit torchWithRocm; };
+  passthru.tests = { inherit torch; };
 
   pythonRemoveDeps = [
     # Circular dependency, cf. https://github.com/openai/triton/issues/1374
