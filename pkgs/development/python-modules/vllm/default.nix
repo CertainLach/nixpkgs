@@ -30,6 +30,7 @@
 
 , rocmSupport ? config.rocmSupport
 , rocmPackages ? {}
+, gpuTargets ? []
 }:
 
 assert rocmSupport -> cudaSupport "vllm rocm support also wants cuda support because of dependency on triton-with-cuda";
@@ -48,6 +49,15 @@ buildPythonPackage {
     rev = "2832e7b9f92e2d1dd7dfe37951e5837c61d3db20";
     sha256 = "sha256-br9NUm+E7fa70GvhkkBCstdnqU3VUWyDnPHrmYjASFk=";
   };
+
+  # Otherwise it will be built for targets supported by torch, which then wants to
+  GPU_ARCHS = lib.optionalString rocmSupport (lib.strings.concatStringsSep ";" (
+    if gpuTargets != [ ] then
+      gpuTargets
+    else
+      # vllm supports less gpu targets than rocm clr, supported target list is taken from ROCM_SUPPORTED_ARCHS in setup.py
+      lib.lists.intersectLists rocmPackages.clr.gpuTargets ["gfx90a" "gfx908" "gfx906" "gfx1030" "gfx1100"]
+  ));
 
   patches = [
     # https://github.com/vllm-project/vllm/pull/2581
