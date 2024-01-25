@@ -14,7 +14,6 @@
 , pyarrow
 , sentencepiece
 , numpy
-, torch-bin
 , transformers
 , xformers
 , fastapi
@@ -119,7 +118,7 @@ buildPythonPackage {
     pyarrow
     sentencepiece
     numpy
-    torch-bin
+    torch
     transformers
     xformers
     fastapi
