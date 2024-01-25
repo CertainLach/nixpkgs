@@ -64,10 +64,12 @@ buildPythonPackage {
     (fetchpatch {
       name = "allow-specifying-hip-targets";
       url = "https://github.com/vllm-project/vllm/pull/2581/commits/0a1bf609bd8f6a7c40557923944c2892b5fbdf18.patch";
+      hash = "sha256-zOeDlV/4nfKAmtzs6n1nfHw5pgkx7JEx0yuiin28n48=";
     })
     (fetchpatch {
       name = "build-only-specific-hip-targets";
       url = "https://github.com/vllm-project/vllm/pull/2581/commits/c21d71f144de18f2abbd5cb5598e104a6a499abf.patch";
+      hash = "sha256-CYHnVF6v2EDdon8WeHTRn7OXXVz7SygyI5KSwHM9TrU=";
     })
   ];
 
