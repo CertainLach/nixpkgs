@@ -124,20 +124,11 @@ in stdenv.mkDerivation (finalAttrs: {
     # We cannot use this for each ROCm library, as each defines their own supported targets
     # See: https://github.com/ROCm/ROCm/blob/77cbac4abab13046ee93d8b5bf410684caf91145/README.md#library-target-matrix
     gpuTargets = lib.forEach [
-      "803"
-      "900"
       "906"
       "908"
       "90a"
-      "940"
-      "941"
-      "942"
-      "1010"
-      "1012"
       "1030"
       "1100"
-      "1101"
-      "1102"
     ] (target: "gfx${target}");
 
     updateScript = rocmUpdateScript {
