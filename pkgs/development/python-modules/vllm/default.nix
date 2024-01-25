@@ -1,6 +1,7 @@
 { lib
 , buildPythonPackage
 , fetchFromGitHub
+, fetchpatch
 , which
 , ninja
 , packaging
@@ -24,12 +25,15 @@
 
 , config
 
-, cudaSupport ? config.cudaSupport
+, cudaSupport ? config.cudaSupport || rocmSupport
 , cudaPackages ? {}
 
 , rocmSupport ? config.rocmSupport
 , rocmPackages ? {}
 }:
+
+assert rocmSupport -> cudaSupport "vllm rocm support also wants cuda support because of dependency on triton-with-cuda";
+
 let
   version = "0.2.6";
 in
@@ -45,13 +49,22 @@ buildPythonPackage {
     sha256 = "sha256-br9NUm+E7fa70GvhkkBCstdnqU3VUWyDnPHrmYjASFk=";
   };
 
-  # Adding ROCM's LLVM to PATH breaks everything.
-  # amdgpu-offload-arch returns rocm arch. vllm still won't work on arch mismatch, but offload-arch script wants
-  # too many new sandbox paths.
-  # HIP version format is broken with raw hipcc call, as it wants some packages in /opt/rocm.
+  patches = [
+    # https://github.com/vllm-project/vllm/pull/2581
+    # Without this patch, vllm tries to to use amdgpu-offload-arch script, which then tries to read some
+    # out-of-the-sandbox path to deduce supported GPU target.
+    (fetchpatch {
+      name = "allow-specifying-hip-targets";
+      url = "https://github.com/vllm-project/vllm/pull/2581/commits/0a1bf609bd8f6a7c40557923944c2892b5fbdf18.patch";
+    })
+    (fetchpatch {
+      name = "build-only-specific-hip-targets";
+      url = "https://github.com/vllm-project/vllm/pull/2581/commits/c21d71f144de18f2abbd5cb5598e104a6a499abf.patch";
+    })
+  ];
+
+  # hipcc --version works badly on NixOS due to unresolved paths.
   postPatch = lib.optionalString rocmSupport ''
-    substituteInPlace setup.py \
-      --replace "/opt/rocm/llvm/bin/amdgpu-offload-arch" "${writeShellScript "gpu-arch-hardcode" "echo gfx1100"}"
     substituteInPlace setup.py \
       --replace "'hipcc', '--version'" "'${writeShellScript "hipcc-version-stub" "echo HIP version: 0.0"}'"
   '';
