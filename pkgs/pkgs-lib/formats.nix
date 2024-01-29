@@ -475,4 +475,23 @@ rec {
     '') {};
   };
 
+  # Probably needs to go to nixos/lib?
+  # It doesn't require any of pkgs, but still uses nix module type system.
+  shellArgs = opts: {
+    type = with lib.types; let
+      singleValue = [
+        bool
+        float
+        int
+        path
+        str
+      ];
+      valueType = oneOf (singleValue ++ [
+        (listOf (oneOf singleValue))
+      ]) // {
+        description = "Shell argument value";
+      };
+    in attrsOf valueType;
+    generateSystemd = attrs: lib.generators.mkShellArguments (opts // {argSep = "\\\n";}) attrs;
+  };
 }
