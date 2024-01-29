@@ -17,7 +17,7 @@ with lib; let
           Pageserver settings, converted and passed as TOML config file.
           Overriden by `configFile`.
 
-          For available params, see: <https://github.com/neondatabase/neon/blob/release-${pkgs.neondb.version}/docs/settings.md>
+          For available params, see: <https://github.com/neondatabase/neon/blob/master/docs/settings.md>
         '';
         type = types.submodule {
           freeformType = settingsFormat.type;
