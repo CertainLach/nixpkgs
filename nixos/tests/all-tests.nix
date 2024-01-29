@@ -592,6 +592,7 @@ in {
   netbird = handleTest ./netbird.nix {};
   nimdow = handleTest ./nimdow.nix {};
   neo4j = handleTest ./neo4j.nix {};
+  neondb = handleTest ./neondb.nix {};
   netdata = handleTest ./netdata.nix {};
   networking.scripted = handleTest ./networking/networkd-and-scripted.nix { networkd = false; };
   networking.networkd = handleTest ./networking/networkd-and-scripted.nix { networkd = true; };
