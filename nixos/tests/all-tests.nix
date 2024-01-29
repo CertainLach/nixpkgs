@@ -573,6 +573,7 @@ in {
   nebula = handleTest ./nebula.nix {};
   netbird = handleTest ./netbird.nix {};
   neo4j = handleTest ./neo4j.nix {};
+  neondb = handleTest ./neondb.nix {};
   netdata = handleTest ./netdata.nix {};
   networking.networkd = handleTest ./networking.nix { networkd = true; };
   networking.scripted = handleTest ./networking.nix { networkd = false; };
