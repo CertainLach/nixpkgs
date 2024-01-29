@@ -24,15 +24,13 @@
 
 , config
 
-, cudaSupport ? config.cudaSupport || rocmSupport
+, cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 
 , rocmSupport ? config.rocmSupport
 , rocmPackages ? {}
 , gpuTargets ? []
 }:
-
-assert rocmSupport -> cudaSupport "vllm rocm support also wants cuda support because of dependency on triton-with-cuda";
 
 let
   version = "0.2.6";
