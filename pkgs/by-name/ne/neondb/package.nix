@@ -11,13 +11,13 @@
 }:
 rustPlatform.buildRustPackage rec {
   pname = "neondb";
-  version = "4459";
+  version = "4642";
 
   src = fetchFromGitHub {
     owner = "neondatabase";
     repo = "neon";
     rev = "release-${version}";
-    hash = "sha256-TDinQACJkaE0xoVP+xYOYD41z6/FyG5s8t3pvj9+Y1U=";
+    hash = "sha256-BLEzroIthlT6xVahG0sDZME67sl7xs33Gm3mEI/Goz4=";
   };
 
   # walproposer wants only postgresql_16, and generates some platform-dependent
@@ -43,6 +43,7 @@ rustPlatform.buildRustPackage rec {
     outputHashes = {
       "heapless-0.8.0" = "sha256-phCls7RQZV0uYhDEp0GIphTBw0cXcurpqvzQCAionhs=";
       "postgres-0.19.4" = "sha256-rybhKZ5I6lsyiHdMlYZEaYawH6L4C8CcTH4/7vax8os=";
+      "parquet-49.0.0" = "sha256-E5KuNB9O+yOvnvrB4WjDNGSbsWLdFvcSNz9xBfUL3ac=";
     };
   };
 
@@ -57,13 +58,13 @@ rustPlatform.buildRustPackage rec {
   ];
   cargoBuildFlags = [
     "--bin" "pg_sni_router"
+    "--bin" "proxy"
     "--bin" "pageserver"
-    "--bin" "pagectl"
     "--bin" "safekeeper"
     "--bin" "storage_broker"
-    "--bin" "proxy"
-    "--bin" "neon_local"
+    "--bin" "pagectl"
     "--bin" "compute_ctl"
+    "--bin" "control_plane"
   ];
 
   # Required setup is too complicated.
