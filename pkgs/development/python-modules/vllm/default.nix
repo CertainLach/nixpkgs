@@ -77,10 +77,10 @@ buildPythonPackage {
   postPatch = ''
     substituteInPlace requirements.txt \
       --replace "xformers == 0.0.23.post1" "xformers == 0.0.24"
-  '' ++ (lib.optionalString rocmSupport ''
+  '' + lib.optionalString rocmSupport ''
     substituteInPlace setup.py \
       --replace "'hipcc', '--version'" "'${writeShellScript "hipcc-version-stub" "echo HIP version: 0.0"}'"
-  '');
+  '';
 
   preBuild = lib.optionalString cudaSupport ''
     export CUDA_HOME=${cudaPackages.cuda_nvcc}
