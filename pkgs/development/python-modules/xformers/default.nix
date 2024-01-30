@@ -22,10 +22,12 @@
 , einops
 , transformers
 , timm
-#, flash-attn
+, git
+# , flash-attn
 }:
 let
-  version = "0.03";
+  inherit (torch) cudaCapabilities cudaPackages cudaSupport;
+  version = "0.0.23.post1";
 in
 buildPythonPackage {
   pname = "xformers";
@@ -38,16 +40,33 @@ buildPythonPackage {
     owner = "facebookresearch";
     repo = "xformers";
     rev = "refs/tags/v${version}";
-    hash = "sha256-G8f7tny5B8SAQ6+2uOjhY7nD0uOT4sskIwtTdwivQXo=";
+    hash = "sha256-AJXow8MmX4GxtEE2jJJ/ZIBr+3i+uS4cA6vofb390rY=";
     fetchSubmodules = true;
   };
+
+  patches = [
+    ./0001-fix-allow-building-without-git.patch
+  ];
 
   preBuild = ''
     cat << EOF > ./xformers/version.py
     # noqa: C801
     __version__ = "${version}"
     EOF
+  '' + lib.optionalString cudaSupport ''
+    export CUDA_HOME=${cudaPackages.cuda_nvcc}
+    export TORCH_CUDA_ARCH_LIST="${lib.concatStringsSep ";" cudaCapabilities}"
   '';
+
+  buildInputs = lib.optionals cudaSupport (with cudaPackages; [
+    # flash-attn build
+    cuda_cudart # cuda_runtime_api.h
+    libcusparse.dev # cusparse.h
+    cuda_cccl.dev # nv/target
+    libcublas.dev # cublas_v2.h
+    libcusolver.dev # cusolverDn.h
+    libcurand.dev # curand_kernel.h
+  ]);
 
   nativeBuildInputs = [
     which
@@ -62,6 +81,7 @@ buildPythonPackage {
 
   dontUseCmakeConfigure = true;
 
+  enableParallelBuilding = true;
   # see commented out missing packages
   doCheck = false;
 
@@ -80,6 +100,10 @@ buildPythonPackage {
     transformers
     timm
     # flash-attn
+    # Checks flash-attn version, but fails as no .git found.
+    # Should the check here allow for missing git?
+    # https://github.com/facebookresearch/xformers/blob/e6e66958b29be6ed6428ab0664092e1733d4bdbc/setup.py#L71
+    git
   ];
 
   meta = with lib; {
