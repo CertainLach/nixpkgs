@@ -98,7 +98,7 @@ buildPythonPackage {
   ];
 
   buildInputs = (lib.optionals cudaSupport (with cudaPackages; [
-    cuda_cudart.dev # cuda_runtime.h
+    cuda_cudart # cuda_runtime.h, -lcudart
     cuda_cccl.dev # <thrust/*>
     libcusparse.dev # cusparse.h
     libcublas.dev # cublas_v2.h
