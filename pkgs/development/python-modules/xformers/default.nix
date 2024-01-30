@@ -22,7 +22,8 @@
 , einops
 , transformers
 , timm
-#, flash-attn
+, git
+# , flash-attn
 }:
 let
   inherit (torch) cudaCapabilities cudaPackages cudaSupport;
@@ -80,6 +81,7 @@ buildPythonPackage {
 
   dontUseCmakeConfigure = true;
 
+  enableParallelBuilding = true;
   # see commented out missing packages
   doCheck = false;
 
@@ -98,6 +100,10 @@ buildPythonPackage {
     transformers
     timm
     # flash-attn
+    # Checks flash-attn version, but fails as no .git found.
+    # Should the check here allow for missing git?
+    # https://github.com/facebookresearch/xformers/blob/e6e66958b29be6ed6428ab0664092e1733d4bdbc/setup.py#L71
+    git
   ];
 
   meta = with lib; {
