@@ -72,11 +72,15 @@ buildPythonPackage {
     })
   ];
 
+  # xformers 0.0.23.post1 github release specifies its version as 0.0.24
   # hipcc --version works badly on NixOS due to unresolved paths.
-  postPatch = lib.optionalString rocmSupport ''
+  postPatch = ''
+    substituteInPlace requirements.txt \
+      --replace "xformers == 0.0.23.post1" "xformers == 0.0.24"
+  '' ++ (lib.optionalString rocmSupport ''
     substituteInPlace setup.py \
       --replace "'hipcc', '--version'" "'${writeShellScript "hipcc-version-stub" "echo HIP version: 0.0"}'"
-  '';
+  '');
 
   preBuild = lib.optionalString cudaSupport ''
     export CUDA_HOME=${cudaPackages.cuda_nvcc}
