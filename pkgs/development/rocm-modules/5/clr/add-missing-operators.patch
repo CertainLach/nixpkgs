@@ -16,15 +16,6 @@ diff --git a/hipamd/include/hip/amd_detail/amd_hip_bf16.h b/hipamd/include/hip/a
 index 757cb7ada..b15ea3b65 100644
 --- a/hipamd/include/hip/amd_detail/amd_hip_bf16.h
 +++ b/hipamd/include/hip/amd_detail/amd_hip_bf16.h
-@@ -87,7 +87,7 @@
- 
- #if !defined(__HIPCC_RTC__)
- #include <hip/amd_detail/amd_hip_common.h>
--#endif // !defined(__HIPCC_RTC__)
-+#endif  // !defined(__HIPCC_RTC__)
- 
- #include "amd_hip_vector_types.h"  // float2 etc
- #include "device_library_decls.h"  // ocml conversion functions
 @@ -96,10 +96,20 @@
  #if defined(__HIPCC_RTC__)
  #define __HOST_DEVICE__ __device__
