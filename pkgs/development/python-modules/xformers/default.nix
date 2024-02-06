@@ -53,6 +53,7 @@ buildPythonPackage {
     patch -u xformers/ops/fmha/common.py -i ${fetchpatch {
       name = "commonpy-rocm";
       url = "https://raw.githubusercontent.com/vllm-project/vllm/f0d4e145575bf6fb96c141d776ce92c9bfc79c49/rocm_patch/commonpy_xformers-0.0.23.rocm.patch";
+      hash = "sha256-2CM7S9fr/ch9c9Ww2DYgrSoC7o4iNfNkdS5CK1o+pJI=";
     }}
     patch -u xformers/ops/fmha/flash.py -i ${fetchpatch {
       name = "flashpy-rocm";
