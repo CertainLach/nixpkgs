@@ -2,6 +2,7 @@
 , buildPythonPackage
 , pythonOlder
 , fetchFromGitHub
+, fetchpatch
 , which
 # runtime dependencies
 , numpy
@@ -26,7 +27,7 @@
 # , flash-attn
 }:
 let
-  inherit (torch) cudaCapabilities cudaPackages cudaSupport;
+  inherit (torch) cudaCapabilities cudaPackages cudaSupport rocmSupport;
   version = "0.0.23.post1";
 in
 buildPythonPackage {
@@ -47,6 +48,17 @@ buildPythonPackage {
   patches = [
     ./0001-fix-allow-building-without-git.patch
   ];
+
+  postPatch = lib.optionalString rocmSupport ''
+    patch -u xformers/ops/fmha/common.py -i ${fetchpatch {
+      name = "commonpy-rocm";
+      url = "https://raw.githubusercontent.com/vllm-project/vllm/f0d4e145575bf6fb96c141d776ce92c9bfc79c49/rocm_patch/commonpy_xformers-0.0.23.rocm.patch";
+    }}
+    patch -u xformers/ops/fmha/flash.py -i ${fetchpatch {
+      name = "flashpy-rocm";
+      url = "https://raw.githubusercontent.com/vllm-project/vllm/f0d4e145575bf6fb96c141d776ce92c9bfc79c49/rocm_patch/flashpy_xformers-0.0.23.rocm.patch";
+    }}
+  '';
 
   preBuild = ''
     cat << EOF > ./xformers/version.py
