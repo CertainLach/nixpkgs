@@ -4111,6 +4111,8 @@ self: super: with self; {
 
   flasgger = callPackage ../development/python-modules/flasgger { };
 
+  flash-attention = callPackage ../development/python-modules/flash-attention { };
+
   flashtext = callPackage ../development/python-modules/flashtext { };
 
   flask-admin = callPackage ../development/python-modules/flask-admin { };

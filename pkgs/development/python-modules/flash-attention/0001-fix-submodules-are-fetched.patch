@@ -1,0 +1,25 @@
+From 946a434c388391bda5014ec1c54ba6bf4f75df31 Mon Sep 17 00:00:00 2001
+From: Yaroslav Bolyukin <iam@lach.pw>
+Date: Tue, 6 Feb 2024 19:27:50 +0100
+Subject: [PATCH] fix: submodules are fetched
+
+---
+ setup.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/setup.py b/setup.py
+index de1503f..482429d 100644
+--- a/setup.py
++++ b/setup.py
+@@ -91,7 +91,7 @@ ext_modules = []
+ 
+ # We want this even if SKIP_CUDA_BUILD because when we run python setup.py sdist we want the .hpp
+ # files included in the source distribution, in case the user compiles from source.
+-subprocess.run(["git", "submodule", "update", "--init", "csrc/cutlass"])
++#subprocess.run(["git", "submodule", "update", "--init", "csrc/cutlass"])
+ 
+ if not SKIP_CUDA_BUILD:
+     print("\n\ntorch.__version__  = {}\n\n".format(torch.__version__))
+-- 
+2.43.0
+
