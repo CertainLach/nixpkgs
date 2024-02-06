@@ -57,6 +57,7 @@ buildPythonPackage {
     patch -u xformers/ops/fmha/flash.py -i ${fetchpatch {
       name = "flashpy-rocm";
       url = "https://raw.githubusercontent.com/vllm-project/vllm/f0d4e145575bf6fb96c141d776ce92c9bfc79c49/rocm_patch/flashpy_xformers-0.0.23.rocm.patch";
+      hash = "sha256-qW0uf7Ni7l66Yna9LlZwQCWyw+XMeDsyzC3JRjQRAsc=";
     }}
   '';
 
