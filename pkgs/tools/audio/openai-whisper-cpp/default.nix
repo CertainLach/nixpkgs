@@ -1,7 +1,6 @@
 { lib
 , stdenv
 , fetchFromGitHub
-, SDL2
 , makeWrapper
 , wget
 , which
@@ -17,6 +16,9 @@
 
 , rocmSupport ? config.rocmSupport
 , rocmPackages ? {}
+
+, withSDL ? true
+, SDL2
 }:
 
 let
@@ -53,7 +55,7 @@ effectiveStdenv.mkDerivation (finalAttrs: {
       autoAddOpenGLRunpathHook
     ]);
 
-  buildInputs = [
+  buildInputs = lib.optionals withSDL [
       SDL2
     ] ++ lib.optionals stdenv.isDarwin [
       Accelerate
