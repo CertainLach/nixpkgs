@@ -17,8 +17,8 @@
 , rocmSupport ? config.rocmSupport
 , rocmPackages ? {}
 
-, withSDL ? true
 , SDL2
+, withSDL ? true
 }:
 
 let
@@ -97,6 +97,8 @@ effectiveStdenv.mkDerivation (finalAttrs: {
     WHISPER_HIPBLAS = "1";
     ROCM_PATH = rocmPackages.clr;
     GPU_TARGETS = lib.concatStringsSep "," rocmPackages.clr.gpuTargets;
+  } // lib.optionalAttrs (!withSDL) {
+    WHISPER_SDL2 = "0";
   };
 
   makeFlags = [ "main" "stream" "command" ];
