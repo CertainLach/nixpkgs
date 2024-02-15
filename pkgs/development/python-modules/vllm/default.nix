@@ -33,7 +33,7 @@
 }:
 
 let
-  version = "0.3.0";
+  version = "0.4.0";
 in
 buildPythonPackage {
   pname = "vllm";
@@ -43,8 +43,8 @@ buildPythonPackage {
   src = fetchFromGitHub {
     owner = "vllm-project";
     repo = "vllm";
-    rev = "v${version}";
-    hash = "sha256-ZpVvh/WvKu97t7AMH4BNSsRqqtmzRL1fkdphT4QclOk=";
+    rev = "4f2ad1113553211778640c648e11f5aa2e03dbd4";
+    hash = "sha256-JIoAO6WNDgAGO2Awe/kJV13wtNoFdXCFobxWShmqwQo=";
   };
 
   # Otherwise it will be built for targets supported by torch, which then wants to
