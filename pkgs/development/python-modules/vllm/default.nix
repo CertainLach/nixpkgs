@@ -20,6 +20,7 @@
 , uvicorn
 , pydantic
 , aioprometheus
+, pynvml
 , writeShellScript
 
 , config
@@ -114,7 +115,10 @@ buildPythonPackage {
     pydantic
     aioprometheus
   ] ++ uvicorn.optional-dependencies.standard
-    ++ aioprometheus.optional-dependencies.starlette;
+    ++ aioprometheus.optional-dependencies.starlette
+    ++ lib.optionals cudaSupport [
+      pynvml
+    ];
 
   pythonImportsCheck = [ "vllm" ];
 
