@@ -56,22 +56,6 @@ buildPythonPackage {
       lib.lists.intersectLists rocmPackages.clr.gpuTargets ["gfx90a" "gfx908" "gfx906" "gfx1030" "gfx1100"]
   ));
 
-  patches = [
-    # https://github.com/vllm-project/vllm/pull/2581
-    # Without this patch, vllm tries to to use amdgpu-offload-arch script, which then tries to read some
-    # out-of-the-sandbox path to deduce supported GPU target.
-    (fetchpatch {
-      name = "allow-specifying-hip-targets";
-      url = "https://github.com/vllm-project/vllm/pull/2581/commits/0a1bf609bd8f6a7c40557923944c2892b5fbdf18.patch";
-      hash = "sha256-zOeDlV/4nfKAmtzs6n1nfHw5pgkx7JEx0yuiin28n48=";
-    })
-    (fetchpatch {
-      name = "build-only-specific-hip-targets";
-      url = "https://github.com/vllm-project/vllm/pull/2581/commits/c21d71f144de18f2abbd5cb5598e104a6a499abf.patch";
-      hash = "sha256-CYHnVF6v2EDdon8WeHTRn7OXXVz7SygyI5KSwHM9TrU=";
-    })
-  ];
-
   # xformers 0.0.23.post1 github release specifies its version as 0.0.24
   # hipcc --version works badly on NixOS due to unresolved paths.
   postPatch = ''
