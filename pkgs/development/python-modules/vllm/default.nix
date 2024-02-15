@@ -50,7 +50,7 @@ buildPythonPackage {
   };
 
   # Otherwise it will be built for targets supported by torch, which then wants to
-  GPU_ARCHS = lib.optionalString rocmSupport (lib.strings.concatStringsSep ";" (
+  PYTORCH_ROCM_ARCH = lib.optionalString rocmSupport (lib.strings.concatStringsSep ";" (
     if gpuTargets != [ ] then
       gpuTargets
     else
