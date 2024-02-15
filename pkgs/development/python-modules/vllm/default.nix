@@ -21,6 +21,7 @@
 , pydantic
 , aioprometheus
 , pynvml
+, cupy
 , writeShellScript
 
 , config
@@ -118,6 +119,7 @@ buildPythonPackage {
     ++ aioprometheus.optional-dependencies.starlette
     ++ lib.optionals cudaSupport [
       pynvml
+      cupy
     ];
 
   pythonImportsCheck = [ "vllm" ];
