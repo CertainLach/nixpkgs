@@ -59,10 +59,14 @@ buildPythonPackage {
   ));
 
   # xformers 0.0.23.post1 github release specifies its version as 0.0.24
+  # cupy-cuda12x is the same wheel as cupy, but built with cuda dependencies, we already have it set up
+  # like that in nixpkgs.
   # hipcc --version works badly on NixOS due to unresolved paths.
   postPatch = ''
     substituteInPlace requirements.txt \
       --replace "xformers == 0.0.23.post1" "xformers == 0.0.24"
+    substituteInPlace requirements.txt \
+      --replace "cupy-cuda12x" "cupy"
   '' + lib.optionalString rocmSupport ''
     substituteInPlace setup.py \
       --replace "'hipcc', '--version'" "'${writeShellScript "hipcc-version-stub" "echo HIP version: 0.0"}'"
