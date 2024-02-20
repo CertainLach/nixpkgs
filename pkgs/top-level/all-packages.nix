@@ -26809,6 +26809,9 @@ with pkgs;
     postgresql_14_jit
     postgresql_15_jit
     postgresql_16_jit
+
+    postgresql_16_neon
+    postgresql_16_neon_jit
   ;
   postgresql = postgresql_15.override { this = postgresql; };
   postgresql_jit = postgresql_15_jit.override { this = postgresql_jit; };
