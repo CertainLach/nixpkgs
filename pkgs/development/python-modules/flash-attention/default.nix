@@ -5,6 +5,11 @@
 , torch
 , packaging
 , which
+, einops
+, safetensors
+, transformers
+, psutil
+, ninja
 
 , config
 }: let
@@ -14,16 +19,16 @@
 in
 buildPythonPackage rec {
   pname = "flash-attention";
-  version = "2024-02-04";
+  version = "2.5.6";
   format = "setuptools";
 
   disabled = pythonOlder "3.7";
 
   src = fetchFromGitHub {
-    owner = "ROCm";
+    owner = "Dao-AILab";
     repo = pname;
-    rev = "ae7928c5aed53cf6e75cc792baa9126b2abfcf1a";
-    hash = "sha256-D7JVPs9tJl2xurWM77nmMARPkK+bzIwSL9KXdhMqUnY=";
+    rev = "v${version}";
+    hash = "sha256-Y+T+qgaLfTE/eTZlMhbjDS2fXqa3NT88Ul25uYRymks=";
     fetchSubmodules = true;
   };
 
@@ -55,21 +60,29 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     torch
     packaging
+    einops
+    safetensors
+    transformers
   ];
 
   nativeBuildInputs = [
     which
+    psutil
+    ninja
   ];
 
   pythonImportsCheck = [
     "flash_attn"
   ];
 
+  # Tests require too many dependencies.
+  doCheck = false;
+
   meta = with lib; {
     description = "Fast and memory-efficient exact attention";
     homepage = "https://github.com/Dao-AILab/flash-attention";
     license = licenses.bsd3;
     maintainers = with maintainers; [ lach ];
-    broken = cudaSupport && rocmSupport || !cudaSupport && !rocmSupport;
+    # broken = cudaSupport && rocmSupport || !cudaSupport && !rocmSupport;
   };
 }
