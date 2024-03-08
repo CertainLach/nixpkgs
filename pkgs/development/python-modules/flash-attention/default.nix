@@ -75,6 +75,9 @@ buildPythonPackage rec {
     "flash_attn"
   ];
 
+  # Tests require too many dependencies.
+  doCheck = false;
+
   meta = with lib; {
     description = "Fast and memory-efficient exact attention";
     homepage = "https://github.com/Dao-AILab/flash-attention";
