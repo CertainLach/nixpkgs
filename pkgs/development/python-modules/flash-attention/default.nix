@@ -1,4 +1,4 @@
-{ lib
+{#  lib
 , buildPythonPackage
 , pythonOlder
 , fetchFromGitHub
@@ -6,6 +6,7 @@
 , packaging
 , which
 , einops
+, psutil
 
 , config
 }: let
@@ -61,6 +62,7 @@ buildPythonPackage rec {
 
   nativeBuildInputs = [
     which
+    psutil
   ];
 
   pythonImportsCheck = [
