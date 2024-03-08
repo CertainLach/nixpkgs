@@ -1,4 +1,4 @@
-{#  lib
+{ lib
 , buildPythonPackage
 , pythonOlder
 , fetchFromGitHub
