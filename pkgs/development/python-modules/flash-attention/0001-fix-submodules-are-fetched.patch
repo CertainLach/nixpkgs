@@ -1,52 +1,32 @@
-From d7723b630e42c0a2bf36dcc6f01413573f743398 Mon Sep 17 00:00:00 2001
+From 2f785e42293d8400245a07da0ea0873b476eed33 Mon Sep 17 00:00:00 2001
 From: Yaroslav Bolyukin <iam@lach.pw>
-Date: Tue, 6 Feb 2024 19:53:22 +0100
-Subject: [PATCH] fix: submodules are fetched
+Date: Fri, 8 Mar 2024 14:37:20 +0100
+Subject: [PATCH] fix: remove submodule fetch
 
 ---
- setup.py | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ setup.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/setup.py b/setup.py
-index b49a677..afc86e1 100644
+index 75c92cb..ce35255 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -136,7 +136,7 @@ def build_for_cuda():
-         cc_flag.append("-gencode")
-         cc_flag.append("arch=compute_90,code=sm_90")
+@@ -91,7 +91,7 @@ ext_modules = []
  
--    subprocess.run(["git", "submodule", "update", "--init", "csrc/cutlass"], check=True)
-+    # subprocess.run(["git", "submodule", "update", "--init", "csrc/cutlass"], check=True)
-     ext_modules.append(
-         CUDAExtension(
-             name="flash_attn_2_cuda",
-@@ -238,16 +238,16 @@ def build_for_rocm():
+ # We want this even if SKIP_CUDA_BUILD because when we run python setup.py sdist we want the .hpp
+ # files included in the source distribution, in case the user compiles from source.
+-subprocess.run(["git", "submodule", "update", "--init", "csrc/cutlass"])
++# subprocess.run(["git", "submodule", "update", "--init", "csrc/cutlass"])
  
-     rename_cpp_to_hip(fa_sources)
- 
--    subprocess.run(
--        [
--            "git",
--            "submodule",
--            "update",
--            "--init",
--            "csrc/flash_attn_rocm/composable_kernel",
--        ],
--        check=True,
--    )
-+    # subprocess.run(
-+    #     [
-+    #         "git",
-+    #         "submodule",
-+    #         "update",
-+    #         "--init",
-+    #         "csrc/flash_attn_rocm/composable_kernel",
-+    #     ],
-+    #     check=True,
-+    # )
-     ext_modules.append(
-         CUDAExtension(
-             name="flash_attn_2_cuda",
+ if not SKIP_CUDA_BUILD:
+     print("\n\ntorch.__version__  = {}\n\n".format(torch.__version__))
+@@ -344,4 +344,4 @@ setup(
+     setup_requires=[
+         "psutil"
+     ],
+-)
+\ No newline at end of file
++)
 -- 
-2.43.0
+2.43.1
 
