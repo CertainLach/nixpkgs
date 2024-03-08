@@ -7,6 +7,7 @@
 , which
 , einops
 , psutil
+, ninja
 
 , config
 }: let
@@ -63,6 +64,7 @@ buildPythonPackage rec {
   nativeBuildInputs = [
     which
     psutil
+    ninja
   ];
 
   pythonImportsCheck = [
