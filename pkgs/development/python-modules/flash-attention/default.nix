@@ -6,6 +6,8 @@
 , packaging
 , which
 , einops
+, safetensors
+, transformers
 , psutil
 , ninja
 
@@ -59,6 +61,8 @@ buildPythonPackage rec {
     torch
     packaging
     einops
+    safetensors
+    transformers
   ];
 
   nativeBuildInputs = [
