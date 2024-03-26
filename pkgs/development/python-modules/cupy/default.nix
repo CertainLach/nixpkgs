@@ -22,6 +22,7 @@ let
       cuda_cccl # <nv/target>
       cuda_cccl.dev
       cuda_cudart
+      cuda_cudart.static # lubcudart_static.a
       cuda_nvcc.dev # <crt/host_defines.h>
       cuda_nvprof
       cuda_nvrtc
