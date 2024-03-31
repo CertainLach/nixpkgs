@@ -47,7 +47,6 @@ let
       branch = lib.versions.majorMinor version;
       maintainers = with lib.maintainers; [ moni lovesegfault atemu shawn8901 zzzsy ];
       description = "Built with custom settings and new features built to provide a stable, responsive and smooth desktop experience";
-      broken = stdenv.isAarch64;
     };
   } // (args.argsOverride or { }));
 in
