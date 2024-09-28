@@ -1,38 +1,23 @@
 {
-  lib,
-  fetchpatch,
-  callPackage,
-  ocaml-ng,
+  buildXenPackage,
   ...
 }@genericDefinition:
-
-let
-  upstreamPatches = import ../generic/patches.nix {
-    inherit lib;
-    inherit fetchpatch;
-  };
-
-  upstreamPatchList = lib.lists.flatten (
-    with upstreamPatches;
-    [
-      QUBES_REPRODUCIBLE_BUILDS
-      XSA_460
-      XSA_461
-      XSA_462
-    ]
-  );
-in
-
-callPackage (import ../generic/default.nix {
+(buildXenPackage.override genericDefinition) {
   pname = "xen";
   branch = "4.19";
   version = "4.19.0";
+  genericPatchList = [
+    "QUBES_REPRODUCIBLE_BUILDS"
+    "XSA_460"
+    "XSA_461"
+    "XSA_462"
+  ];
   latest = true;
   pkg = {
     xen = {
       rev = "026c9fa29716b0ff0f8b7c687908e71ba29cf239";
       hash = "sha256-Q6x+2fZ4ITBz6sKICI0NHGx773Rc919cl+wzI89UY+Q=";
-      patches = [ ] ++ upstreamPatchList;
+      patches = [ ];
     };
     qemu = {
       rev = "0df9387c8983e1b1e72d8c574356f572342c03e6";
@@ -55,4 +40,4 @@ callPackage (import ../generic/default.nix {
       patches = [ ];
     };
   };
-}) ({ ocamlPackages = ocaml-ng.ocamlPackages_4_14; } // genericDefinition)
+}

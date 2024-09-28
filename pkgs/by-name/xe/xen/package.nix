@@ -29,28 +29,19 @@ in
 rec {
   xen_4_19 = callPackage ./4.19/default.nix { inherit (standard) meta; };
   xen_4_19-slim = xen_4_19.override {
-    withInternalQEMU = false;
-    withInternalSeaBIOS = false;
-    withInternalOVMF = false;
-    withInternalIPXE = false;
+    slim = true;
     inherit (slim) meta;
   };
 
   xen_4_18 = callPackage ./4.18/default.nix { inherit (standard) meta; };
   xen_4_18-slim = xen_4_18.override {
-    withInternalQEMU = false;
-    withInternalSeaBIOS = false;
-    withInternalOVMF = false;
-    withInternalIPXE = false;
+    slim = true;
     inherit (slim) meta;
   };
 
   xen_4_17 = callPackage ./4.17/default.nix { inherit (standard) meta; };
   xen_4_17-slim = xen_4_17.override {
-    withInternalQEMU = false;
-    withInternalSeaBIOS = false;
-    withInternalOVMF = false;
-    withInternalIPXE = false;
+    slim = true;
     inherit (slim) meta;
   };
 }

@@ -1,4 +1,3 @@
-versionDefinition:
 {
   lib,
   stdenv,
@@ -10,6 +9,7 @@ versionDefinition:
   which,
 
   fetchgit,
+  fetchpatch,
   fetchFromGitHub,
 
   # Xen
@@ -32,21 +32,23 @@ versionDefinition:
   zlib,
   zstd,
 
+  slim ? false,
+
   # Xen Optional
-  withInternalQEMU ? true,
+  withInternalQEMU ? !slim,
   pixman,
   glib,
 
-  withInternalSeaBIOS ? true,
+  withInternalSeaBIOS ? !slim,
   withSeaBIOS ? !withInternalSeaBIOS,
   seabios,
 
-  withInternalOVMF ? true,
+  withInternalOVMF ? !slim,
   withOVMF ? !withInternalOVMF,
   OVMF,
   nasm,
 
-  withInternalIPXE ? true,
+  withInternalIPXE ? !slim,
   withIPXE ? !withInternalIPXE,
   ipxe,
 
@@ -76,6 +78,7 @@ versionDefinition:
   util-linux,
   ...
 }@packageDefinition:
+versionDefinition:
 
 let
   #TODO: fix paths instead.
@@ -103,11 +106,22 @@ let
     branch
     version
     latest
+    genericPatchList
     pkg
     ;
 
   # Mark versions older than minSupportedVersion as EOL.
   minSupportedVersion = "4.17";
+
+  ## Generic Patch Handling ##
+
+  mappedGenericPatches = builtins.map (patch: upstreamPatches.${patch}) genericPatchList;
+
+  upstreamPatches = import ./patches.nix {
+    inherit lib fetchpatch;
+  };
+
+  upstreamPatchList = lib.lists.flatten mappedGenericPatches;
 
   ## Pre-fetched Source Handling ##
 
@@ -335,7 +349,8 @@ stdenv.mkDerivation (finalAttrs: {
     # Generic Xen patches that apply to all Xen versions.
     [ ./0000-xen-ipxe-src-generic.patch ]
     # Gets the patches from the pkg.xen.patches attribute from the versioned files.
-    ++ lib.lists.optionals (lib.attrsets.hasAttrByPath [ "patches" ] pkg.xen) pkg.xen.patches;
+    ++ lib.lists.optionals (lib.attrsets.hasAttrByPath [ "patches" ] pkg.xen) pkg.xen.patches
+    ++ upstreamPatchList;
 
   nativeBuildInputs =
     [
@@ -390,7 +405,7 @@ stdenv.mkDerivation (finalAttrs: {
     ]
     ++ lib.lists.optional (!withInternalQEMU) "--with-system-qemu"
 
-    ++ lib.lists.optional withSeaBIOS "--with-system-seabios=${seabios}/share/seabios"
+    ++ lib.lists.optional withSeaBIOS "--with-system-seabios=${seabios.firmware}"
     ++ lib.lists.optional (!withInternalSeaBIOS && !withSeaBIOS) "--disable-seabios"
 
     ++ lib.lists.optional withOVMF "--with-system-ovmf=${OVMF.firmware}"

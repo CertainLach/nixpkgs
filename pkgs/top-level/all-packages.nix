@@ -34021,10 +34021,22 @@ with pkgs;
 
   xdotool = callPackage ../tools/X11/xdotool { };
 
-  xenPackages = recurseIntoAttrs (callPackage ../applications/virtualization/xen/packages.nix {});
+  buildXenPackage = callPackage ../build-support/xen {
+    ocamlPackages = ocaml-ng.ocamlPackages_4_14;
+  };
 
-  xen = xenPackages.xen_4_19;
-  xen-slim = xenPackages.xen_4_19-slim;
+  xenPackages = recurseIntoAttrs (callPackages ../by-name/xe/xen/package.nix { });
+
+  inherit (pkgs.xenPackages)
+    xen_4_19
+    xen_4_18
+    xen_4_17
+    xen_4_19-slim
+    xen_4_18-slim
+    xen_4_17-slim;
+
+  xen = xen_4_19;
+  xen-slim = xen_4_19-slim;
 
   xkbset = callPackage ../tools/X11/xkbset { };
 
