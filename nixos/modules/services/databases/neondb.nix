@@ -49,20 +49,24 @@ with lib; let
       };
     };
   };
-  generatePageserverUnit = name: pageserver: {
-    name = "neondb-pageserver@${name}";
-    value = {
-      wantedBy = ["multi-user.target"];
-      serviceConfig = {
-        # Unfortunately, config file needs to be in dataDir.
-        # Pending neondb PR.
-        ExecStartPre = [
-          "${pkgs.coreutils}/bin/cp ${pageserver.configFile} ./pageserver.toml"
-        ];
+  generatePageserverUnit = name: pageserver:
+    let
+      identityFile = settingsFormat.generate "identity-${name}.toml" {
+        id = pageserver.settings.id;
       };
-      overrideStrategy = "asDropin";
+    in {
+      name = "neondb-pageserver@${name}";
+      value = {
+        wantedBy = ["multi-user.target"];
+        serviceConfig = {
+          ExecStartPre = [
+            "${pkgs.coreutils}/bin/ln -sf ${pageserver.configFile} ./pageserver.toml"
+            "${pkgs.coreutils}/bin/ln -sf ${identityFile} ./identity.toml"
+          ];
+        };
+        overrideStrategy = "asDropin";
+      };
     };
-  };
   generateSafekeeperUnit = name: safekeeper: {
     name = "neondb-safekeeper@${name}";
     value = {
@@ -95,9 +99,26 @@ in {
       default = {};
       type = with types; attrsOf (submodule safekeeperOpts);
     };
+    storageController = {
+      enable = mkEnableOption "NeonDB Storage Controller";
+      settings = mkOption {
+        description = ''
+          Storage controller settings, passed as CLI arguments.
+        '';
+        type = types.submodule {
+          freeformType = argumentsFormat.type;
+        };
+        default = {};
+      };
+    };
     package = mkPackageOption pkgs "neondb" {};
+    storageBrokerListenAddr = mkOption {
+      description = "Listen address for the storage broker.";
+      type = types.str;
+      default = "127.0.0.1:50051";
+    };
   };
-  config = mkIf (cfg.pageservers != {} && cfg.safekeepers != {}) {
+  config = mkIf (cfg.pageservers != {} || cfg.safekeepers != {} || cfg.storageController.enable) {
     systemd.services =
       {
         "neondb-pageserver@" = {
@@ -124,11 +145,11 @@ in {
           };
         };
         "neondb-storage-broker" = {
-          description = "NeonDB Storage Broker %I";
+          description = "NeonDB Storage Broker";
           after = ["network.target"];
           wantedBy = ["multi-user.target"];
           serviceConfig = {
-            ExecStart = "${cfg.package}/bin/storage_broker";
+            ExecStart = "${cfg.package}/bin/storage_broker --listen-addr ${cfg.storageBrokerListenAddr}";
             StateDirectory = "neondb/storage-broker";
             WorkingDirectory = "/var/lib/neondb/storage-broker";
             DynamicUser = true;
@@ -138,6 +159,25 @@ in {
         };
       }
       // (mapAttrs' generatePageserverUnit cfg.pageservers)
-      // (mapAttrs' generateSafekeeperUnit cfg.safekeepers);
+      // (mapAttrs' generateSafekeeperUnit cfg.safekeepers)
+      // optionalAttrs cfg.storageController.enable {
+        "neondb-storage-controller" = {
+          description = "NeonDB Storage Controller";
+          after = ["network.target" "postgresql.service"];
+          requires = ["postgresql.service"];
+          wantedBy = ["multi-user.target"];
+          serviceConfig = {
+            ExecStart = ''
+              ${cfg.package}/bin/storage_controller \
+                ${argumentsFormat.generateSystemd cfg.storageController.settings}
+            '';
+            StateDirectory = "neondb/storage-controller";
+            WorkingDirectory = "/var/lib/neondb/storage-controller";
+            DynamicUser = true;
+            Restart = "on-failure";
+            RestartSec = 5;
+          };
+        };
+      };
   };
 }
