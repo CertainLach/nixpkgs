@@ -3,22 +3,39 @@
   rustPlatform,
   fetchFromGitHub,
   stdenv,
+  symlinkJoin,
 
-  pkg-config, protobuf,
-  postgresql_14, postgresql_15, postgresql_16,
+  pkg-config,
+  protobuf,
+  postgresql_14_neon,
+  postgresql_15_neon,
+  postgresql_16_neon,
+  postgresql_17_neon,
 
   openssl,
 }:
-rustPlatform.buildRustPackage rec {
+
+let
+  version = "9129";
+  mergePg = name: pg: symlinkJoin { inherit name; paths = [ pg pg.dev pg.pg_config ]; };
+  pg14 = mergePg "pg-neon-v14" postgresql_14_neon;
+  pg15 = mergePg "pg-neon-v15" postgresql_15_neon;
+  pg16 = mergePg "pg-neon-v16" postgresql_16_neon;
+  pg17 = mergePg "pg-neon-v17" postgresql_17_neon;
+in
+
+rustPlatform.buildRustPackage {
   pname = "neondb";
-  version = "4642";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "neondatabase";
     repo = "neon";
     rev = "release-${version}";
-    hash = "sha256-BLEzroIthlT6xVahG0sDZME67sl7xs33Gm3mEI/Goz4=";
+    hash = "sha256-n5o4mHs6JJHTDTY0TnzRg3lKpSQKzYEe1nIXFGkRJJw=";
   };
+
+  cargoHash = "sha256-C9EatnwZr+QjIzGa44bZPjMJptKLrpjCL2ZXJ+jpAeU=";
 
   # walproposer wants only postgresql_16, and generates some platform-dependent
   # code, based on platforms ABI. I have no idea how to make it work with crosscompilation.
@@ -28,24 +45,16 @@ rustPlatform.buildRustPackage rec {
   # Generated code should be platform-independent, bindgen emits isize for size_t etc,
   # and postgres functions are the same between platforms.
   #
-  # walproposer also wants to see libpgport.a at build/walproposer-lib path for some reason.
+  # walproposer also wants to see libpgport.a at libs/walproposer-lib path for some reason.
   postPatch = ''
     mkdir pg_install
-    ln -s ${postgresql_14}/ pg_install/v14
-    ln -s ${postgresql_15}/ pg_install/v15
-    ln -s ${postgresql_16}/ pg_install/v16
+    ln -s ${pg14} pg_install/v14
+    ln -s ${pg15} pg_install/v15
+    ln -s ${pg16} pg_install/v16
+    ln -s ${pg17} pg_install/v17
     mkdir -p pg_install/build/walproposer-lib
-    ln -s ${postgresql_16}/lib/lib{walproposer,pg{common,port}}.a pg_install/build/walproposer-lib/
+    ln -s ${pg17}/lib/lib{walproposer,pg{common,port}}.a pg_install/build/walproposer-lib/
   '';
-
-  cargoLock = {
-    lockFile = ./Cargo.lock;
-    outputHashes = {
-      "heapless-0.8.0" = "sha256-phCls7RQZV0uYhDEp0GIphTBw0cXcurpqvzQCAionhs=";
-      "postgres-0.19.4" = "sha256-rybhKZ5I6lsyiHdMlYZEaYawH6L4C8CcTH4/7vax8os=";
-      "parquet-49.0.0" = "sha256-E5KuNB9O+yOvnvrB4WjDNGSbsWLdFvcSNz9xBfUL3ac=";
-    };
-  };
 
   nativeBuildInputs = [
     pkg-config
@@ -57,14 +66,28 @@ rustPlatform.buildRustPackage rec {
     openssl
   ];
   cargoBuildFlags = [
-    "--bin" "pg_sni_router"
-    "--bin" "proxy"
-    "--bin" "pageserver"
-    "--bin" "safekeeper"
-    "--bin" "storage_broker"
-    "--bin" "pagectl"
-    "--bin" "compute_ctl"
-    "--bin" "control_plane"
+    "--bin"
+    "pg_sni_router"
+    "--bin"
+    "proxy"
+    "--bin"
+    "pageserver"
+    "--bin"
+    "pagectl"
+    "--bin"
+    "safekeeper"
+    "--bin"
+    "storage_broker"
+    "--bin"
+    "storage_controller"
+    "--bin"
+    "storage_scrubber"
+    "--bin"
+    "storcon_cli"
+    "--bin"
+    "pagectl"
+    "--bin"
+    "compute_ctl"
   ];
 
   # Required setup is too complicated.
